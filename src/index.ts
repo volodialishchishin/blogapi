@@ -12,7 +12,7 @@ const port =  process.env.PORT || 8000
 app.use(express.json())
 app.use('/blogs',blogsRouter)
 app.use('/posts',postsRouter)
-app.delete('/testings/all-data',(req,res)=>{
+app.delete('/testing/all-data',(req,res)=>{
     blogs = []
     posts = []
     res.sendStatus(204)
