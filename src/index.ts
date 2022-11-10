@@ -3,6 +3,7 @@ import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {BlogViewModel} from "./models/BlogViewModel";
 import {PostViewModel} from "./models/PostViewModel";
+import {runDb} from "./DB/db";
 export let blogs: Array<BlogViewModel> = []
 export let posts: Array<PostViewModel> = []
 const app = express()
@@ -17,7 +18,8 @@ app.delete('/testing/all-data',(req,res)=>{
     posts = []
     res.sendStatus(204)
 })
-app.listen(port,()=>{
+app.listen(port,async ()=>{
+    await runDb()
     console.log(`Server working on ${port}`)
 })
 
