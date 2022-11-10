@@ -5,10 +5,10 @@ import {inputValidationMiddlware} from "../middlwares/input-validation-middlware
 import {ErrorModel} from "../models/Error";
 import {authMiddleware} from "../middlwares/auth-middleware";
 import {PostViewModel} from "../models/PostViewModel";
-import {blogs} from "./blogs-router";
 import {PostInputModel} from "../models/PostInputModel";
+import {blogs, posts} from "../index";
 
-let posts: Array<PostViewModel> = []
+
 export const postsRouter = Router()
 
 postsRouter.get('/', (req: Request, res: Response<Array<PostViewModel>>) => {
@@ -80,6 +80,7 @@ postsRouter.put('/:id',
 postsRouter.delete('/:id', authMiddleware,(req: RequestWithParamsAndBody<{id:string},PostInputModel>, res: Response<ErrorModel>) => {
         let foundPost = posts.find(e => e.id === req.params.id)
         if (foundPost){
+            // @ts-ignore
             posts = posts.filter(c => c.id !== req.params.id)
             res.sendStatus(204)
         }

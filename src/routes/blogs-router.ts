@@ -6,8 +6,8 @@ import {BlogInputModel} from "../models/BlogInputModel";
 import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
 import {ErrorModel} from "../models/Error";
 import {authMiddleware} from "../middlwares/auth-middleware";
+import {blogs} from "../index";
 
-export let blogs: Array<BlogViewModel> = []
 export const blogsRouter = Router()
 
 blogsRouter.get('/', (req: Request, res: Response<Array<BlogViewModel>>) => {
@@ -52,17 +52,17 @@ blogsRouter.put('/:id',
     }
 )
 blogsRouter.delete('/:id', authMiddleware,(req: RequestWithParamsAndBody<{id:string},BlogInputModel>, res: Response<ErrorModel>) => {
-        let foundBlog = blogs.find(e => e.id === req.params.id)
-        if (foundBlog){
-            blogs = blogs.filter(c => c.id !== req.params.id)
-            res.sendStatus(204)
-        }
-        else{
-            res.sendStatus(404)
-        }
-
+    let foundBlog = blogs.find(e => e.id === req.params.id)
+    if (foundBlog){
+        // @ts-ignore
+        blogs = blogs.filter(c => c.id !== req.params.id)
+        res.sendStatus(204)
     }
-)
+    else{
+        res.sendStatus(404)
+    }
+
+})
 
 blogsRouter.get('/:id', (req: RequestWithParamsAndBody<{id:string},BlogInputModel>, res: Response<BlogViewModel>) => {
         let foundBlog = blogs.find(e => e.id === req.params.id)
