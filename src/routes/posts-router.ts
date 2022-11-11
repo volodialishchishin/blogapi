@@ -53,7 +53,7 @@ postsRouter.put('/:id',
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{ id: string }, PostInputModel>, res: Response<ErrorModel>) => {
         const {title, shortDescription, content, blogId} = req.body
-        let result = await postsRepository.updatePost(title, shortDescription, content, blogId, req.params.id)
+        let result = await postsRepository.updatePost(blogId, title, content, shortDescription, req.params.id)
         if (result) {
             res.sendStatus(204)
         } else {
