@@ -44,13 +44,15 @@ export const blogsRepository = {
         return result.deletedCount === 1
 
     },
-    async getBlog(id: string): Promise<BlogViewModel> {
+    async getBlog(id: string): Promise<BlogViewModel | undefined> {
         let result = await blogsCollection.find({id: id}).toArray()
-        return {
-            name: result[0].name,
-            createdAt: result[0].createdAt,
-            id: result[0].id,
-            youtubeUrl: result[0].youtubeUrl
+        if (result){
+            return {
+                name: result[0].name,
+                createdAt: result[0].createdAt,
+                id: result[0].id,
+                youtubeUrl: result[0].youtubeUrl
+            }
         }
 
     }

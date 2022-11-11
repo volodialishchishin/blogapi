@@ -55,16 +55,18 @@ export const postsRepository = {
         return result.deletedCount === 1
 
     },
-    async getPost(id:string): Promise<PostViewModel> {
+    async getPost(id:string): Promise<PostViewModel | undefined> {
         let result =  await postsCollection.find({id:id}).toArray()
-        return{
-            id:result[0].id,
-            title:result[0].title,
-            shortDescription:result[0].shortDescription,
-            content:result[0].content,
-            blogId:result[0].blogId,
-            blogName:result[0].blogName,
-            createdAt: result[0].createdAt,
+        if (result){
+            return{
+                id:result[0].id,
+                title:result[0].title,
+                shortDescription:result[0].shortDescription,
+                content:result[0].content,
+                blogId:result[0].blogId,
+                blogName:result[0].blogName,
+                createdAt: result[0].createdAt,
+            }
         }
 
     }
