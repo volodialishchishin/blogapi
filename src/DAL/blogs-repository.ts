@@ -10,7 +10,8 @@ export const blogsRepository = {
         const newPost = {
             id: Number(new Date).toString(),
             name,
-            youtubeUrl
+            youtubeUrl,
+            createdAt: new Date().toISOString()
         }
         await blogsCollection.insertOne(newPost)
         return newPost
