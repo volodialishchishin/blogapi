@@ -16,12 +16,14 @@ export const blogsRepository = {
     },
 
     async createBlog(name: string, youtubeUrl: string): Promise<BlogViewModel> {
+        console.log('im her3')
         const newPost = {
             id: Number(new Date).toString(),
             name,
             youtubeUrl,
             createdAt: new Date().toISOString()
         }
+        console.log('im her4')
         await blogsCollection.insertOne(newPost)
         return {
             name: newPost.name,

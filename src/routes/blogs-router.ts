@@ -24,7 +24,9 @@ blogsRouter.post('/',
     inputValidationMiddlware,
     async (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
         const {name, youtubeUrl} = req.body
+        console.log('im here')
         let result = await blogsRepository.createBlog(name, youtubeUrl)
+        console.log('im here1')
         res.status(201).json(result)
     }
 )
