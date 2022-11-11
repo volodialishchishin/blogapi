@@ -1,7 +1,5 @@
 import {blogsCollection} from "../DB/db";
 import {BlogViewModel} from "../models/BlogViewModel";
-import {BlogInputModel} from "../models/BlogInputModel";
-import {InsertOneResult} from "mongodb";
 
 export const blogsRepository = {
     async getBlogs(): Promise<BlogViewModel[]> {
@@ -16,6 +14,24 @@ export const blogsRepository = {
         }
         await blogsCollection.insertOne(newPost)
         return newPost
+
+    },
+    async updateBlog(name:string,youtubeUrl:string,id:string): Promise<boolean> {
+        let result = await blogsCollection.updateOne(
+            { id : id },
+            { $set: { youtubeUrl : youtubeUrl,name:name } }
+        );
+        return result.matchedCount === 1
+
+    },
+    async deleteBlog(id:string): Promise<boolean> {
+        const result = await blogsCollection.deleteOne({id:id})
+        return result.deletedCount === 1
+
+    },
+    async getBlog(id:string): Promise<BlogViewModel> {
+        let result =  await blogsCollection.find({id:id}).toArray()
+        return result[0]
 
     }
 }
