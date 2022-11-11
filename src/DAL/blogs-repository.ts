@@ -46,7 +46,7 @@ export const blogsRepository = {
     },
     async getBlog(id: string): Promise<BlogViewModel | undefined> {
         let result = await blogsCollection.find({id: id}).toArray()
-        if (result){
+        if (result.length){
             return {
                 name: result[0].name,
                 createdAt: result[0].createdAt,

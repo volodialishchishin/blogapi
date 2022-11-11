@@ -57,7 +57,7 @@ export const postsRepository = {
     },
     async getPost(id:string): Promise<PostViewModel | undefined> {
         let result =  await postsCollection.find({id:id}).toArray()
-        if (result){
+        if (result.length){
             return{
                 id:result[0].id,
                 title:result[0].title,
