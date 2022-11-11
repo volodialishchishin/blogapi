@@ -23,7 +23,12 @@ export const blogsRepository = {
             createdAt: new Date().toISOString()
         }
         await blogsCollection.insertOne(newPost)
-        return newPost
+        return {
+            name: newPost.name,
+            createdAt: newPost.createdAt,
+            id: newPost.id,
+            youtubeUrl: newPost.youtubeUrl
+        }
 
     },
     async updateBlog(name: string, youtubeUrl: string, id: string): Promise<boolean> {
@@ -41,7 +46,12 @@ export const blogsRepository = {
     },
     async getBlog(id: string): Promise<BlogViewModel> {
         let result = await blogsCollection.find({id: id}).toArray()
-        return result[0]
+        return {
+            name: result[0].name,
+            createdAt: result[0].createdAt,
+            id: result[0].id,
+            youtubeUrl: result[0].youtubeUrl
+        }
 
     }
 }
