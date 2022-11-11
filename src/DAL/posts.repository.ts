@@ -4,7 +4,18 @@ import {blogsRepository} from "./blogs-repository";
 
 export const postsRepository = {
     async getPosts(): Promise<PostViewModel[]> {
-        return postsCollection.find({}).toArray()
+        let result = await postsCollection.find({}).toArray()
+        return result.map(e=>{
+            return{
+                id:e.id,
+                title:e.title,
+                shortDescription:e.shortDescription,
+                content:e.content,
+                blogId:e.blogId,
+                blogName:e.blogName,
+                createdAt: e.createdAt,
+            }
+        })
     },
 
     async createPost(blogId:string,title:string,content:string,shortDescription:string): Promise<PostViewModel> {
@@ -38,7 +49,15 @@ export const postsRepository = {
     },
     async getPost(id:string): Promise<PostViewModel> {
         let result =  await postsCollection.find({id:id}).toArray()
-        return result[0]
+        return{
+            id:result[0].id,
+            title:result[0].title,
+            shortDescription:result[0].shortDescription,
+            content:result[0].content,
+            blogId:result[0].blogId,
+            blogName:result[0].blogName,
+            createdAt: result[0].createdAt,
+        }
 
     }
 }

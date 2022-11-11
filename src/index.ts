@@ -1,9 +1,9 @@
-import express, {Request, Response} from 'express'
+import express from 'express'
 import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {BlogViewModel} from "./models/BlogViewModel";
 import {PostViewModel} from "./models/PostViewModel";
-import {runDb} from "./DB/db";
+import {blogsCollection, postsCollection, runDb} from "./DB/db";
 export let blogs: Array<BlogViewModel> = []
 export let posts: Array<PostViewModel> = []
 const app = express()
@@ -13,9 +13,9 @@ const port =  process.env.PORT || 8000
 app.use(express.json())
 app.use('/blogs',blogsRouter)
 app.use('/posts',postsRouter)
-app.delete('/testing/all-data',(req,res)=>{
-    blogs = []
-    posts = []
+app.delete('/testing/all-data',async (req,res)=>{
+    await blogsCollection.deleteMany({})
+    await postsCollection.deleteMany({})
     res.sendStatus(204)
 })
 app.listen(port,async ()=>{
