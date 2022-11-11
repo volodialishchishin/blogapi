@@ -7,6 +7,7 @@ import {inputValidationMiddlware} from "../middlwares/input-validation-middlware
 import {ErrorModel} from "../models/Error";
 import {authMiddleware} from "../middlwares/auth-middleware";
 import {blogsRepository} from "../DAL/blogs-repository";
+import {postsRepository} from "../DAL/posts.repository";
 
 export const blogsRouter = Router()
 
@@ -25,7 +26,7 @@ blogsRouter.post('/',
     async (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
         const {name, youtubeUrl} = req.body
         console.log('im here')
-        let result = await blogsRepository.createBlog(name, youtubeUrl)
+        let result = await blogsRepository.createBlog(name,youtubeUrl)
         console.log('im here1')
         res.status(201).json(result)
     }
