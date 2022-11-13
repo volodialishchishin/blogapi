@@ -33,11 +33,11 @@ export const queryRepository = {
         let result = await postsCollection.find({}).toArray()
         return result.map(Helpers.postsMapperToView)
     },
-    async getBlogs(searchNameTerm:string | null,
-                   pageNumber:number,
-                   sortBy:string,
-                   pageSize:number,
-                   sortDirection:'asc'|'desc'
+    async getBlogs(searchNameTerm: string | null,
+                   pageNumber: number,
+                   sortBy: string,
+                   pageSize: number,
+                   sortDirection: 'asc'| 'desc'
     ): Promise<BlogViewModelWithQuery> {
         let result = await blogsCollection.find({name:searchNameTerm?{$regex:searchNameTerm ,$options:'gi'}:{$regex:'.'}}).skip((pageNumber-1)*pageSize).limit(pageSize).sort(sortBy,sortDirection).toArray()
         const allBlogs = await this.getAllBlogs()
