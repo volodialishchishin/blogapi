@@ -10,7 +10,7 @@ export type BlogsQueryParams = {
     pageNumber:number
     pageSize:number
     sortBy:string
-    sortDirection:string
+    sortDirection:'asc'|'desc'
 }
 export type PostsQueryParams = {
     blogId:string

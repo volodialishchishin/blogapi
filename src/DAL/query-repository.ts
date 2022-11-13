@@ -18,9 +18,9 @@ export const queryRepository = {
         const allPosts = await this.getAllPosts()
         const pagesCount = Math.ceil(allPosts.length/pageSize)
         return {
-            pagesCount,
-            page: pageNumber,
-            pageSize:pageSize,
+            pagesCount:Number(pagesCount),
+            page: Number(pageNumber),
+            pageSize:Number(pageSize),
             totalCount:allPosts.length,
             items:result.map(Helpers.postsMapperToView)
         }
@@ -59,9 +59,9 @@ export const queryRepository = {
         const allPosts = await this.getAllPosts()
         const pagesCount = Math.ceil(allPosts.length/pageSize)
         return {
-            pagesCount,
-            page:pageNumber,
-            pageSize:pageSize,
+            pagesCount:Number(pagesCount),
+            page: Number(pageNumber),
+            pageSize:Number(pageSize),
             totalCount:allPosts.length,
             items:result.map(Helpers.postsMapperToView)
         }
