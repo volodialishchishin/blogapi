@@ -8,8 +8,10 @@ export const queryRepository = {
                            pageNumber:number,
                            sortBy:string,
                            pageSize:number,
-                           sortDirection:string): Promise<PostViewModelWithQuery> {
-        let result = await postsCollection.find({}).skip((pageNumber-1)*pageSize).limit(pageSize).sort({sortBy:sortDirection.toLowerCase()==='asc'?1:-1}).toArray()
+                           sortDirection:'asc'|'desc'): Promise<PostViewModelWithQuery> {
+        console.log(Number.isInteger(Number(pageSize)))
+        console.log(sortBy)
+        let result = await postsCollection.find({}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allPosts = await this.getAllPosts()
         const pagesCount = Math.ceil(allPosts.length/pageSize)
         return {

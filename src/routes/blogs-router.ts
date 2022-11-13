@@ -40,8 +40,10 @@ blogsRouter.get('/:blogId/posts', query('searchNameTerm').isString(),
     query('sortBy').isString(),
     query('sortDirection').isString(), async (req: Request<{blogId:string},{},{},PostsQueryParams>, res: Response<PostViewModelWithQuery>) => {
         const pageNumber = req.query.pageNumber || 1
+
         const sortBy = req.query.sortBy || 'createdAt'
         const pageSize = req.query.pageSize || 10
+        console.log(pageSize)
         const sortDirection = req.query.sortDirection || 'desc'
         res.status(200).json(await queryRepository.getBlogsByBlogId(req.params.blogId, pageNumber, sortBy, pageSize, sortDirection))
     })

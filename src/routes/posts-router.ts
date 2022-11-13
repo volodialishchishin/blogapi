@@ -49,6 +49,9 @@ postsRouter.post('/',
     async (req: RequestWithBody<PostInputModel>, res: Response<PostViewModel>) => {
         const {blogId, title, content, shortDescription} = req.body
         let result = await postsService.createPost(blogId, title, content, shortDescription)
+        if (!result){
+            res.sendStatus(404)
+        }
         res.status(201).json(result)
     }
 )

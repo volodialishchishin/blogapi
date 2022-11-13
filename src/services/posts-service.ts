@@ -8,19 +8,25 @@ export const postsService = {
         return postsRepository.getPosts()
     },
 
-    createPost: async function (blogId: string, title: string, content: string, shortDescription: string): Promise<PostViewModel> {
+    createPost: async function (blogId: string, title: string, content: string, shortDescription: string): Promise<PostViewModel|undefined> {
         let blogger = await blogsRepository.getBlog(blogId)
-        const newPost: PostViewModel = {
-            blogName: blogger ? blogger.name : '',
-            shortDescription,
-            content,
-            blogId,
-            title,
-            id: Number(new Date).toString(),
-            createdAt: new Date().toISOString()
+        let newPost:PostViewModel
+        if (blogger){
+             newPost = {
+                blogName: blogger.name,
+                shortDescription,
+                content,
+                blogId,
+                title,
+                id: Number(new Date).toString(),
+                createdAt: new Date().toISOString()
+            }
+            await postsRepository.createPost(newPost)
+            return Helpers.postsMapperToView(newPost)
         }
-        await postsRepository.createPost(newPost)
-        return Helpers.postsMapperToView(newPost)
+
+        return undefined
+
 
     },
     async updatePost(blogId: string, title: string, content: string, shortDescription: string, id: string): Promise<boolean> {
