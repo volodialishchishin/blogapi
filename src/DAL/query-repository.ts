@@ -2,16 +2,19 @@ import {blogsCollection, postsCollection} from "../DB/db";
 import {BlogViewModel, BlogViewModelWithQuery} from "../models/BlogViewModel";
 import {Helpers} from "../helpers/helpers";
 import {PostViewModel, PostViewModelWithQuery} from "../models/PostViewModel";
+import {blogsRepository} from "./blogs-repository";
 
 export const queryRepository = {
     async getBlogsByBlogId(blogId:string,
                            pageNumber:number,
                            sortBy:string,
                            pageSize:number,
-                           sortDirection:'asc'|'desc'): Promise<PostViewModelWithQuery> {
-        console.log(Number.isInteger(Number(pageSize)))
-        console.log(sortBy)
-        let result = await postsCollection.find({}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
+                           sortDirection:'asc'|'desc'): Promise<PostViewModelWithQuery | null> {
+        let foundBlog = await blogsRepository.getBlog(blogId)
+        if (!foundBlog){
+            return null
+        }
+        let result = await postsCollection.find({blogId:blogId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allPosts = await this.getAllPosts()
         const pagesCount = Math.ceil(allPosts.length/pageSize)
         return {

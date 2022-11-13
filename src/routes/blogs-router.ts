@@ -45,7 +45,13 @@ blogsRouter.get('/:blogId/posts', query('searchNameTerm').isString(),
         const pageSize = req.query.pageSize || 10
         console.log(pageSize)
         const sortDirection = req.query.sortDirection || 'desc'
-        res.status(200).json(await queryRepository.getBlogsByBlogId(req.params.blogId, pageNumber, sortBy, pageSize, sortDirection))
+        let result = await queryRepository.getBlogsByBlogId(req.params.blogId, pageNumber, sortBy, pageSize, sortDirection)
+        if (result){
+            res.status(200).json(result)
+        }
+        else{
+            res.sendStatus(404)
+        }
     })
 
 blogsRouter.post('/',
