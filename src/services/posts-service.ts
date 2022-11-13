@@ -25,8 +25,11 @@ export const postsService = {
             await postsRepository.createPost(newPost)
             return Helpers.postsMapperToView(newPost)
         }
+        else{
+            return null
+        }
 
-        return null
+
 
 
     },

@@ -18,10 +18,10 @@ export const queryRepository = {
         const allPosts = await this.getAllPosts()
         const pagesCount = Math.ceil(allPosts.length/pageSize)
         return {
+            pagesCount,
             page: pageNumber,
             pageSize:pageSize,
             totalCount:allPosts.length,
-            pagesCount,
             items:result.map(Helpers.postsMapperToView)
         }
     },
@@ -37,7 +37,7 @@ export const queryRepository = {
                    pageNumber: number,
                    sortBy: string,
                    pageSize: number,
-                   sortDirection: 'asc'| 'desc'
+                   sortDirection: string
     ): Promise<BlogViewModelWithQuery> {
         let result = await blogsCollection.find({name:searchNameTerm?{$regex:searchNameTerm ,$options:'gi'}:{$regex:'.'}}).skip((pageNumber-1)*pageSize).limit(Number(pageSize)).sort(sortBy,sortDirection).toArray()
         const allBlogs = await this.getAllBlogs()
@@ -59,10 +59,10 @@ export const queryRepository = {
         const allPosts = await this.getAllPosts()
         const pagesCount = Math.ceil(allPosts.length/pageSize)
         return {
+            pagesCount,
             page:pageNumber,
             pageSize:pageSize,
             totalCount:allPosts.length,
-            pagesCount,
             items:result.map(Helpers.postsMapperToView)
         }
     },
