@@ -8,8 +8,9 @@ export const postsService = {
         return postsRepository.getPosts()
     },
 
-    createPost: async function (blogId: string, title: string, content: string, shortDescription: string): Promise<PostViewModel|undefined> {
+    createPost: async function (blogId: string, title: string, content: string, shortDescription: string): Promise<PostViewModel|null> {
         let blogger = await blogsRepository.getBlog(blogId)
+        console.log(blogger)
         let newPost:PostViewModel
         if (blogger){
              newPost = {
@@ -25,7 +26,7 @@ export const postsService = {
             return Helpers.postsMapperToView(newPost)
         }
 
-        return undefined
+        return null
 
 
     },
