@@ -40,7 +40,7 @@ export const queryRepository = {
                    sortDirection: 'asc' | 'desc'
     ): Promise<BlogViewModelWithQuery> {
         let result = await blogsCollection.find({name:searchNameTerm?{$regex:searchNameTerm ,$options:'gi'}:{$regex:'.'}}).skip((pageNumber-1)*pageSize).limit(Number(pageSize)).sort(sortBy,sortDirection).toArray()
-        const allBlogs = await this.getAllBlogs()
+        const allBlogs = await blogsCollection.find({name:searchNameTerm?{$regex:searchNameTerm ,$options:'gi'}:{$regex:'.'}}).toArray()
         const pagesCount = Math.ceil(allBlogs.length/pageSize)
         return {
             pagesCount:Number(pagesCount),
