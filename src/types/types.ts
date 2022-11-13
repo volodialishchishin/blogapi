@@ -17,5 +17,5 @@ export type PostsQueryParams = {
     pageNumber:number
     pageSize:number
     sortBy:string
-    sortDirection:string
+    sortDirection: 'asc'|'desc'
 }

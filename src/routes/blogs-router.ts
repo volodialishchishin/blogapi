@@ -113,6 +113,9 @@ blogsRouter.post('/:blogId/posts',
     async (req: RequestWithParamsAndBody<{ blogId: string }, BlogPostInputModel>, res: Response<PostViewModel>) => {
         const {content, shortDescription, title} = req.body
         let result = await postsService.createPost(req.params.blogId, title, content, shortDescription)
+        if (!result){
+            res.status(404)
+        }
         res.status(201).json(result)
     }
 )
