@@ -43,10 +43,10 @@ export const queryRepository = {
         const allBlogs = await this.getAllBlogs()
         const pagesCount = Math.ceil(allBlogs.length/pageSize)
         return {
-            page:pageNumber,
-            pageSize:pageSize,
+            pagesCount:Number(pagesCount),
+            page: Number(pageNumber),
+            pageSize:Number(pageSize),
             totalCount:allBlogs.length,
-            pagesCount,
             items:result.map(Helpers.blogsMapperToView)
         }
     },
