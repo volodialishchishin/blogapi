@@ -28,7 +28,7 @@ export const blogsRepository = {
     },
     async getBlog(id: string): Promise<BlogViewModel | null> {
         let result = await blogsCollection.find({id: id}).toArray()
-        return Helpers.blogsMapperToView(result[0])
+        return result[0] ? Helpers.blogsMapperToView(result[0]) : null
 
 
     }
