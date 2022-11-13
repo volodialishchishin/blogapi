@@ -116,6 +116,8 @@ blogsRouter.post('/:blogId/posts',
         if (result){
             res.status(201).json(result)
         }
-        res.sendStatus(404)
+        else{
+            res.sendStatus(404)
+        }
     }
 )
