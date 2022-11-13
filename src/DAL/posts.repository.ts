@@ -8,6 +8,7 @@ export const postsRepository = {
     },
 
     async createPost(post:PostViewModel): Promise<void> {
+        console.log(post)
         await postsCollection.insertOne(post)
     },
     async updatePost(blogId:string,title:string,content:string,shortDescription:string,id:string): Promise<boolean> {
