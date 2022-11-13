@@ -1,20 +1,36 @@
-import {Request, Response, Router} from "express";
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody} from "../types/types";
-import {body} from "express-validator";
+import {Response, Router} from "express";
+import {
+    PostsQueryParams,
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithQuery
+} from "../types/types";
+import {body, query} from "express-validator";
 import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
 import {ErrorModel} from "../models/Error";
 import {authMiddleware} from "../middlwares/auth-middleware";
-import {PostViewModel} from "../models/PostViewModel";
+import {PostViewModel, PostViewModelWithQuery} from "../models/PostViewModel";
 import {PostInputModel} from "../models/PostInputModel";
-import {postsRepository} from "../DAL/posts.repository";
+import {postsService} from "../services/posts-service";
 import {blogsRepository} from "../DAL/blogs-repository";
+import {queryRepository} from "../DAL/query-repository";
 
 
 export const postsRouter = Router()
 
-postsRouter.get('/', async (req: Request, res: Response<Array<PostViewModel>>) => {
-    res.status(200).json(await postsRepository.getPosts())
-})
+postsRouter.get('/',
+    query('pageNumber').isNumeric(),
+    query('pageSize').isNumeric(),
+    query('sortBy').isString(),
+    query('sortDirection').isString(),
+    async (req:  RequestWithQuery<PostsQueryParams>, res: Response<PostViewModelWithQuery>) => {
+        const pageNumber = req.query.pageNumber || 1
+        const sortBy = req.query.sortBy || 'createdAt'
+        const pageSize = req.query.pageSize || 10
+        const sortDirection = req.query.sortDirection || 'desc'
+        res.status(200).json(await queryRepository.getPosts(pageNumber, sortBy, pageSize, sortDirection))
+    })
 
 postsRouter.post('/',
     authMiddleware,
@@ -32,7 +48,7 @@ postsRouter.post('/',
     inputValidationMiddlware,
     async (req: RequestWithBody<PostInputModel>, res: Response<PostViewModel>) => {
         const {blogId, title, content, shortDescription} = req.body
-        let result = await postsRepository.createPost(blogId, title, content, shortDescription)
+        let result = await postsService.createPost(blogId, title, content, shortDescription)
         res.status(201).json(result)
     }
 )
@@ -53,7 +69,7 @@ postsRouter.put('/:id',
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{ id: string }, PostInputModel>, res: Response<ErrorModel>) => {
         const {title, shortDescription, content, blogId} = req.body
-        let result = await postsRepository.updatePost(blogId, title, content, shortDescription, req.params.id)
+        let result = await postsService.updatePost(blogId, title, content, shortDescription, req.params.id)
         if (result) {
             res.sendStatus(204)
         } else {
@@ -62,7 +78,7 @@ postsRouter.put('/:id',
     }
 )
 postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParamsAndBody<{ id: string }, PostInputModel>, res: Response<ErrorModel>) => {
-        let result = await postsRepository.deletePost(req.params.id)
+        let result = await postsService.deletePost(req.params.id)
         if (result) {
             res.sendStatus(204)
         } else {
@@ -72,7 +88,7 @@ postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParamsAndBody<
 )
 
 postsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response<PostViewModel>) => {
-        let result = await postsRepository.getPost(req.params.id)
+        let result = await postsService.getPost(req.params.id)
         if (result) {
             res.status(200).json(result)
         } else {

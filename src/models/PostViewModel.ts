@@ -1,3 +1,5 @@
+
+
 export type PostViewModel = {
     id:string
     title:string
@@ -6,4 +8,11 @@ export type PostViewModel = {
     blogId:string
     blogName:string
     createdAt: string
+}
+export type PostViewModelWithQuery = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount:number,
+    items:Array<PostViewModel>
 }

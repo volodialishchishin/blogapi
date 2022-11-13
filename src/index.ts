@@ -7,7 +7,7 @@ import {blogsCollection, postsCollection, runDb} from "./DB/db";
 export let blogs: Array<BlogViewModel> = []
 export let posts: Array<PostViewModel> = []
 const app = express()
-const port =  process.env.PORT || 8000
+const port =  process.env.PORT || 8001
 
 
 app.use(express.json())
