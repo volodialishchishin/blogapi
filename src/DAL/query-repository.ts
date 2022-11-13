@@ -15,7 +15,7 @@ export const queryRepository = {
             return null
         }
         let result = await postsCollection.find({blogId:blogId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
-        const allPosts = await this.getAllPosts()
+        const allPosts = await postsCollection.find({blogId:blogId}).toArray()
         const pagesCount = Math.ceil(allPosts.length/pageSize)
         return {
             pagesCount:Number(pagesCount),
