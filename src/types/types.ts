@@ -12,6 +12,14 @@ export type BlogsQueryParams = {
     sortBy:string
     sortDirection:'asc'|'desc'
 }
+export type UserQueryParams = {
+    searchEmailTerm:string
+    searchLoginTerm:string
+    pageNumber:number
+    pageSize:number
+    sortBy:string
+    sortDirection:'asc'|'desc'
+}
 export type PostsQueryParams = {
     blogId:string
     pageNumber:number

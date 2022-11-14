@@ -14,6 +14,7 @@ export const blogsService = {
             createdAt: new Date().toISOString()
         }
         return blogsRepository.createBlog(newBlog)
+
     }
     ,
     async updateBlog(name: string, youtubeUrl: string, id: string): Promise<boolean> {
