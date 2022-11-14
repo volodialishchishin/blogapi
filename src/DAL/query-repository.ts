@@ -36,8 +36,10 @@ export const queryRepository = {
         sortDirection: 'asc' | 'desc'
     ): Promise<userViewModelWithQuery> {
         let result = await usersCollection.find({
-            login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'},
-            email: searchEmailTerm? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}
+            $or:[
+                {login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'}},
+                {email: searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}}
+            ]
         }).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allUsers = await usersCollection.find({
             $or:[
