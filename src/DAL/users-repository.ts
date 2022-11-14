@@ -4,7 +4,8 @@ import {UserViewModel} from "../models/UserViewModel";
 import {UserModel} from "../models/User";
 
 export const usersRepository = {
-    async createUser(user:UserViewModel & {password:string}): Promise<UserViewModel> {
+    async createUser(user:UserModel): Promise<UserViewModel> {
+        console.log(user)
         await usersCollection.insertOne(user)
         return Helpers.userMapperToView(user)
     },

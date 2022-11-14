@@ -10,7 +10,7 @@ authRouter.post('/login',
     body('password').isString().trim().isLength({min: 6, max: 20}),
     async (req: RequestWithBody<{ login: string, password: string }>, res: Response) => {
     const {login,password} = req.body
-    const checkResult = await usersService.checkCredentials(login,password,10)
+    const checkResult = await usersService.checkCredentials(login,password)
         if (checkResult){
             res.sendStatus(204)
         }

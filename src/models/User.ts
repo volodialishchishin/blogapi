@@ -5,4 +5,5 @@ export type UserModel = {
     email:string
     createdAt:string
     password:string
+    passwordSalt:string
 }

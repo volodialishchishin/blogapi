@@ -1,14 +1,16 @@
 import {UserViewModel} from "../models/UserViewModel";
 import bcrypt from 'bcrypt'
 import {usersRepository} from "../DAL/users-repository";
+import {UserModel} from "../models/User";
 
 export const usersService = {
     async createUser(login:string,email:string,password:string): Promise<UserViewModel> {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.generateHash(password,passwordSalt)
-        const newUser:UserViewModel & {password:string} = {
+        const newUser:UserModel = {
             id: new Date().toISOString(),
             password: passwordHash,
+            passwordSalt: passwordSalt,
             login,
             email,
             createdAt: new Date().toISOString(),
@@ -22,11 +24,12 @@ export const usersService = {
     async generateHash(password:string,salt:string){
         return await bcrypt.hash(password, salt)
     },
-    async checkCredentials(login:string,password:string,salt:number): Promise<boolean> {
-        const passwordSalt = await bcrypt.genSalt(salt)
+    async checkCredentials(login:string,password:string): Promise<boolean> {
         const user = await usersRepository.getUserByLogin(login)
+        console.log(user)
         if (!user) return false
-        const passwordHash = await this.generateHash(password,passwordSalt)
+        const passwordHash = await this.generateHash(password,user.passwordSalt)
+        console.log(user.password,passwordHash)
         return user.password === passwordHash;
 
     },

@@ -40,8 +40,10 @@ export const queryRepository = {
             email: searchEmailTerm? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}
         }).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allUsers = await usersCollection.find({
-            login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'},
-            email: searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}
+            $or:[
+                {login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'}},
+                {email: searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}}
+            ]
         }).toArray()
         const pagesCount = Math.ceil(allUsers.length / pageSize)
         return {
