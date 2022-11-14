@@ -3,7 +3,7 @@ import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {BlogViewModel} from "./models/BlogViewModel";
 import {PostViewModel} from "./models/PostViewModel";
-import {blogsCollection, postsCollection, runDb} from "./DB/db";
+import {blogsCollection, postsCollection, runDb, usersCollection} from "./DB/db";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 export let blogs: Array<BlogViewModel> = []
@@ -20,6 +20,7 @@ app.use('/auth',authRouter)
 app.delete('/testing/all-data',async (req,res)=>{
     await blogsCollection.deleteMany({})
     await postsCollection.deleteMany({})
+    await usersCollection.deleteMany({})
     res.sendStatus(204)
 })
 app.listen(port,async ()=>{

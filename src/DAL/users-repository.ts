@@ -1,7 +1,6 @@
 import {usersCollection} from "../DB/db";
 import {Helpers} from "../helpers/helpers";
 import {UserViewModel} from "../models/UserViewModel";
-import {ObjectId} from "mongodb";
 import {UserModel} from "../models/User";
 
 export const usersRepository = {
@@ -9,7 +8,7 @@ export const usersRepository = {
         await usersCollection.insertOne(user)
         return Helpers.userMapperToView(user)
     },
-    async deleteBlog(id: ObjectId): Promise<boolean> {
+    async deleteBlog(id: string): Promise<boolean> {
         const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },

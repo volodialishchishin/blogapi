@@ -5,7 +5,7 @@ import {body} from "express-validator";
 
 export const authRouter = Router()
 
-authRouter.post('/',
+authRouter.post('/login',
     body('login').isString().trim().isLength({min: 3, max: 10}),
     body('password').isString().trim().isLength({min: 6, max: 20}),
     async (req: RequestWithBody<{ login: string, password: string }>, res: Response) => {

@@ -1,16 +1,14 @@
 import {Response, Router} from "express";
 import {
-    RequestWithBody,
-    RequestWithParamsAndBody, RequestWithQuery, UserQueryParams,
+    RequestWithBody, RequestWithParams,
+    RequestWithQuery, UserQueryParams,
 } from "../types/types";
 import {body, query} from "express-validator";
-import {BlogInputModel} from "../models/BlogInputModel";
 import {ErrorModel} from "../models/Error";
 import {authMiddleware} from "../middlwares/auth-middleware";
 import {UserInputModel} from "../models/UserInputModel";
 import {UserViewModel, userViewModelWithQuery} from "../models/UserViewModel";
 import {usersService} from "../services/users-service";
-import {ObjectId} from "mongodb";
 import {queryRepository} from "../DAL/query-repository";
 import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
 
@@ -46,9 +44,8 @@ usersRouter.post('/',
         res.status(201).json(result)
     })
 
-usersRouter.delete('/:id', authMiddleware, async (req: RequestWithParamsAndBody<{ id: string }, BlogInputModel>, res: Response<ErrorModel>) => {
-    let id = new ObjectId(req.params.id)
-    let result = await usersService.deleteBlog(id)
+usersRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response<ErrorModel>) => {
+    let result = await usersService.deleteBlog(req.params.id)
     if (result) {
         res.sendStatus(204)
     } else {

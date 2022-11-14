@@ -1,6 +1,5 @@
-import {ObjectId} from "mongodb";
 export type UserViewModel = {
-    id:ObjectId
+    id:string
     login:string
     email:string
     createdAt:string

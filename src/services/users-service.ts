@@ -1,6 +1,5 @@
 import {UserViewModel} from "../models/UserViewModel";
 import bcrypt from 'bcrypt'
-import {ObjectId} from "mongodb";
 import {usersRepository} from "../DAL/users-repository";
 
 export const usersService = {
@@ -8,7 +7,7 @@ export const usersService = {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.generateHash(password,passwordSalt)
         const newUser:UserViewModel & {password:string} = {
-            id: new ObjectId(),
+            id: new Date().toISOString(),
             password: passwordHash,
             login,
             email,
@@ -17,7 +16,7 @@ export const usersService = {
         return usersRepository.createUser(newUser)
 
     },
-    async deleteBlog(id: ObjectId): Promise<boolean> {
+    async deleteBlog(id: string): Promise<boolean> {
         return  await usersRepository.deleteBlog(id)
     },
     async generateHash(password:string,salt:string){
