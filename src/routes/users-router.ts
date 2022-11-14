@@ -12,6 +12,7 @@ import {UserViewModel, userViewModelWithQuery} from "../models/UserViewModel";
 import {usersService} from "../services/users-service";
 import {ObjectId} from "mongodb";
 import {queryRepository} from "../DAL/query-repository";
+import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
 
 export const usersRouter = Router()
 
@@ -34,13 +35,15 @@ usersRouter.get('/',
 
 
 usersRouter.post('/',
+    authMiddleware,
     body('login').isString().trim().isLength({min: 3, max: 10}),
     body('password').isString().trim().isLength({min: 6, max: 20}),
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    inputValidationMiddlware,
     async (req: RequestWithBody<UserInputModel>, res: Response<UserViewModel>) => {
         const {login, password, email} = req.body
         let result = await usersService.createUser(login,email,password)
-        res.status(200).json(result)
+        res.status(201).json(result)
     })
 
 usersRouter.delete('/:id', authMiddleware, async (req: RequestWithParamsAndBody<{ id: string }, BlogInputModel>, res: Response<ErrorModel>) => {

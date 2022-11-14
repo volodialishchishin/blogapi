@@ -39,7 +39,7 @@ export const queryRepository = {
             login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'},
             email: searchEmailTerm? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}
         }).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
-        const allBlogs = await blogsCollection.find({
+        const allBlogs = await usersCollection.find({
             login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'},
             email: searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}
         }).toArray()
@@ -66,7 +66,7 @@ export const queryRepository = {
             } : {$regex: '.'}
         }).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allBlogs = await blogsCollection.find({
-            ame: searchNameTerm ? {$regex: searchNameTerm, $options: 'gi'} : {$regex: '.'}
+            name: searchNameTerm ? {$regex: searchNameTerm, $options: 'gi'} : {$regex: '.'}
         }).toArray()
         const pagesCount = Math.ceil(allBlogs.length / pageSize)
         return {
