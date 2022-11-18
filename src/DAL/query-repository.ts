@@ -72,7 +72,7 @@ export const queryRepository = {
             page: Number(pageNumber),
             pageSize: Number(pageSize),
             totalCount: allComments.length,
-            items: result
+            items: result.map(Helpers.commentsMapperToView)
         }
     },
     async getBlogs(

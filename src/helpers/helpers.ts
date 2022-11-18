@@ -1,6 +1,7 @@
 import {PostViewModel} from "../models/Post/PostViewModel";
 import {BlogViewModel} from "../models/Blog/BlogViewModel";
 import {UserViewModel} from "../models/User/UserViewModel";
+import {CommentViewModel} from "../models/Comment/CommentViewModel";
 
 export const Helpers = {
     postsMapperToView(post:PostViewModel): PostViewModel{
@@ -28,6 +29,15 @@ export const Helpers = {
             email: user.email,
             createdAt: user.createdAt,
             login:user.login
+        }
+    },
+    commentsMapperToView(comment:CommentViewModel): CommentViewModel{
+        return {
+            content: comment.content,
+            userId: comment.userId,
+            userLogin: comment.userLogin,
+            id: comment.id,
+            createdAt: comment.createdAt,
         }
     }
 }

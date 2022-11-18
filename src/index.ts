@@ -6,6 +6,7 @@ import {PostViewModel} from "./models/Post/PostViewModel";
 import {blogsCollection, commentsCollection, postsCollection, runDb, usersCollection} from "./DB/db";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
+import {commentsRouter} from "./routes/comments-router";
 export let blogs: Array<BlogViewModel> = []
 export let posts: Array<PostViewModel> = []
 const app = express()
@@ -17,7 +18,7 @@ app.use('/blogs',blogsRouter)
 app.use('/posts',postsRouter)
 app.use('/users',usersRouter)
 app.use('/auth',authRouter)
-app.use('/comments',usersRouter)
+app.use('/comments',commentsRouter)
 app.delete('/testing/all-data',async (req,res)=>{
     await blogsCollection.deleteMany({})
     await postsCollection.deleteMany({})

@@ -25,15 +25,16 @@ commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: R
 commentsRouter.put('/:commentId',
     authMiddlewareJwt,
     body('content').isString().trim().isLength({min: 20, max: 300}),
-    async (req: RequestWithParamsAndBody<{ id: string }, CommentInputModel>, res: Response) => {
-        let comment = await commentsService.getComment(req.params.id)
+    inputValidationMiddlware,
+    async (req: RequestWithParamsAndBody<{ commentId: string }, CommentInputModel>, res: Response) => {
+        let comment = await commentsService.getComment(req.params.commentId)
         if (comment.userId !== req.context.user.id) {
             res.sendStatus(403)
         }
         if (!comment){
             res.sendStatus(404)
         }
-        let updateStatus = await commentsService.updateComment(req.params.id, req.body.content)
+        let updateStatus = await commentsService.updateComment(req.params.commentId, req.body.content)
         if (updateStatus){
             res.sendStatus(204)
         }
@@ -41,15 +42,16 @@ commentsRouter.put('/:commentId',
 
 commentsRouter.delete('/:commentId',
     authMiddlewareJwt,
-    async (req:RequestWithParams<{ id:string }>,res:Response)=>{
-    let comment = await commentsService.getComment(req.params.id)
+    inputValidationMiddlware,
+    async (req:RequestWithParams<{ commentId:string }>,res:Response)=>{
+    let comment = await commentsService.getComment(req.params.commentId)
     if (comment.userId !== req.context.user.id) {
         res.sendStatus(403)
     }
     if (!comment){
         res.sendStatus(404)
     }
-    let deleteStatus = await commentsService.deleteComment(req.params.id)
+    let deleteStatus = await commentsService.deleteComment(req.params.commentId)
     if (deleteStatus){
         res.sendStatus(204)
     }

@@ -7,7 +7,7 @@ import {CommentViewModel} from "../models/Comment/CommentViewModel";
 export const commentsRepository = {
     async createComment(comment: CommentViewModel) {
         await commentsCollection.insertOne(comment)
-        return comment
+        return Helpers.commentsMapperToView(comment)
     },
     async updateComment(id: string, content: string): Promise<boolean> {
         let result = await commentsCollection.updateOne(
@@ -22,7 +22,7 @@ export const commentsRepository = {
     },
     async getCommentById(id: string): Promise<CommentViewModel> {
         let comment = await commentsCollection.find({id: id}).toArray()
-        return comment[0]
+        return Helpers.commentsMapperToView(comment[0])
     },
     async deleteComment(id:string):Promise<boolean>{
         let result = await postsCollection.deleteOne(

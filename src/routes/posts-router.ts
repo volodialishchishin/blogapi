@@ -111,6 +111,7 @@ postsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Resp
 postsRouter.post('/:id/comments',
     authMiddlewareJwt,
     body('content').isString().trim().isLength({min: 20, max: 300}),
+    inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{ id: string }, CommentInputModel>, res: Response<CommentViewModel>) => {
         const {content} = req.body
         const {context: {user} = {}} = req
@@ -125,7 +126,7 @@ postsRouter.post('/:id/comments',
     }
 )
 
-postsRouter.get('/',
+postsRouter.get('/:id/comments',
     query('pageNumber').isNumeric(),
     query('pageSize').isNumeric(),
     query('sortBy').isString(),
@@ -135,6 +136,7 @@ postsRouter.get('/',
         const sortBy = req.query.sortBy || 'createdAt'
         const pageSize = req.query.pageSize || 10
         const sortDirection = req.query.sortDirection || 'desc'
+        console.log(req.params.id)
         res.status(200).json(await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection))
     })
 
