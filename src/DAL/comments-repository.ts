@@ -21,9 +21,12 @@ export const commentsRepository = {
         );
         return result.matchedCount === 1
     },
-    async getCommentById(id: string): Promise<CommentViewModel> {
+    async getCommentById(id: string): Promise<CommentViewModel | undefined> {
         let comment = await commentsCollection.find({id: id}).toArray()
-        return Helpers.commentsMapperToView(comment[0])
+        console.log(comment)
+        if (comment.length){
+            return Helpers.commentsMapperToView(comment[0])
+        }
     },
     async deleteComment(id:string):Promise<boolean>{
         let result = await postsCollection.deleteOne(

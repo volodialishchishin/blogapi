@@ -66,7 +66,7 @@ export const queryRepository = {
     ): Promise<CommentViewModelWithQuery> {
         let result = await commentsCollection.find({postId: postId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         console.log(postId)
-        const allComments = await commentsCollection.find({id: postId}).toArray()
+        const allComments = await commentsCollection.find({postId: postId}).toArray()
         const pagesCount = Math.ceil(allComments.length / pageSize)
         return {
             pagesCount: Number(pagesCount),
