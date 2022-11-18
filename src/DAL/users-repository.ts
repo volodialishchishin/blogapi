@@ -19,7 +19,9 @@ export const usersRepository = {
         return result[0]
     },
     async getUserById(id: string):Promise<UserModel> {
+        console.log(id)
         const result = await usersCollection.find({id: id}).toArray()
+        console.log(result)
         return result[0]
     }
 }

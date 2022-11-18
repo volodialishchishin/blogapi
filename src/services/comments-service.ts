@@ -1,14 +1,16 @@
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
 import {commentsRepository} from "../DAL/comments-repository";
+import {CommentModel} from "../models/Comment/CommentModel";
 
 export const commentsService = {
     async createComment(postId:string,content:string,userId:string,userLogin:string): Promise<CommentViewModel> {
-        const newComment: CommentViewModel = {
+        const newComment: CommentModel = {
             id: Number(new Date).toString(),
             content,
             userId,
             userLogin,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            postId
         }
         return commentsRepository.createComment(newComment)
 

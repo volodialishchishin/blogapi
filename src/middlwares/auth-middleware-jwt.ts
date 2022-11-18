@@ -7,17 +7,22 @@ export const authMiddlewareJwt = (async (req: Request, res: Response, next: Next
     const authToken = req.headers.authorization?.split(' ')[1]
     const authHeaderCheck = authToken && authType && authType === 'Bearer'
     if (!authHeaderCheck) {
-        res.send(401)
+        res.sendStatus(401)
         return
     }
     const userId = jwtService.getUserIdByToken(authToken)
 
     if (userId) {
-        console.log(await usersRepository.getUserById(userId))
         req.context = {user:await usersRepository.getUserById(userId)}
-        return next()
+        if(req.context.user){
+            return next()
+        }
 
     }
     res.sendStatus(401)
+    return
+
+
+
 
 })

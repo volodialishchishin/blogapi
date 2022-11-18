@@ -28,15 +28,19 @@ commentsRouter.put('/:commentId',
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{ commentId: string }, CommentInputModel>, res: Response) => {
         let comment = await commentsService.getComment(req.params.commentId)
+        console.log('32331.',comment.userId,req.context.user.id)
         if (comment.userId !== req.context.user.id) {
             res.sendStatus(403)
+            return
         }
         if (!comment){
             res.sendStatus(404)
+            return
         }
         let updateStatus = await commentsService.updateComment(req.params.commentId, req.body.content)
         if (updateStatus){
             res.sendStatus(204)
+            return
         }
     })
 
@@ -45,15 +49,19 @@ commentsRouter.delete('/:commentId',
     inputValidationMiddlware,
     async (req:RequestWithParams<{ commentId:string }>,res:Response)=>{
     let comment = await commentsService.getComment(req.params.commentId)
+        console.log(comment.userId,req.context.user.id)
     if (comment.userId !== req.context.user.id) {
         res.sendStatus(403)
+        return
     }
     if (!comment){
         res.sendStatus(404)
+        return
     }
     let deleteStatus = await commentsService.deleteComment(req.params.commentId)
     if (deleteStatus){
         res.sendStatus(204)
+        return
     }
 })
 

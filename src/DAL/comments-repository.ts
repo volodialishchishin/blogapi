@@ -3,9 +3,10 @@ import {Helpers} from "../helpers/helpers";
 import {UserViewModel} from "../models/User/UserViewModel";
 import {UserModel} from "../models/User/User";
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
+import {CommentModel} from "../models/Comment/CommentModel";
 
 export const commentsRepository = {
-    async createComment(comment: CommentViewModel) {
+    async createComment(comment: CommentModel) {
         await commentsCollection.insertOne(comment)
         return Helpers.commentsMapperToView(comment)
     },
