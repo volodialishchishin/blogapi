@@ -24,8 +24,8 @@ export const usersService = {
     async generateHash(password:string,salt:string){
         return await bcrypt.hash(password, salt)
     },
-    async checkCredentials(login:string,password:string): Promise<UserModel | null | undefined> {
-        const user = await usersRepository.getUserByLogin(login)
+    async checkCredentials(login:string,email:string,password:string): Promise<UserModel | null | undefined> {
+        const user = await usersRepository.getUserByLoginOrEmail(login,email)
         if (!user) return null
         const passwordHash = await this.generateHash(password,user.passwordSalt)
         if (user.password === passwordHash) return user

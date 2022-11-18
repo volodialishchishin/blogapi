@@ -10,11 +10,13 @@ import {usersRepository} from "../DAL/users-repository";
 export const authRouter = Router()
 
 authRouter.post('/login',
-    body('login').isString().trim().isLength({min: 3, max: 10}),
+    body('login').optional().isString().trim().isLength({min: 3, max: 10}),
+    body('email').optional().isString().trim().isLength({min: 3, max: 10}),
     body('password').isString().trim().isLength({min: 6, max: 20}),
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
-        const {login, password} = req.body
-        const user = await usersService.checkCredentials(login, password)
+        const {login='', password='',email=''} = req.body
+        const user = await usersService.checkCredentials(login, password,email)
+        console.log(user)
         if (user) {
             const token = jwtService.createJWT(user)
             res.status(200).json({token})
