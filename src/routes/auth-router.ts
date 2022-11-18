@@ -19,7 +19,7 @@ authRouter.post('/login',
         console.log('fsdfd',user)
         if (user) {
             const token = jwtService.createJWT(user)
-            res.status(200).json({token})
+            res.status(200).json({accessToken:token})
         } else {
             res.sendStatus(401)
         }
