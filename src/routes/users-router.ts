@@ -4,10 +4,10 @@ import {
     RequestWithQuery, UserQueryParams,
 } from "../types/types";
 import {body, query} from "express-validator";
-import {ErrorModel} from "../models/Error";
+import {ErrorModel} from "../models/Error/Error";
 import {authMiddleware} from "../middlwares/auth-middleware";
-import {UserInputModel} from "../models/UserInputModel";
-import {UserViewModel, userViewModelWithQuery} from "../models/UserViewModel";
+import {UserInputModel} from "../models/User/UserInputModel";
+import {UserViewModel, userViewModelWithQuery} from "../models/User/UserViewModel";
 import {usersService} from "../services/users-service";
 import {queryRepository} from "../DAL/query-repository";
 import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
@@ -45,7 +45,7 @@ usersRouter.post('/',
     })
 
 usersRouter.delete('/:id', authMiddleware, async (req: RequestWithParams<{ id: string }>, res: Response<ErrorModel>) => {
-    let result = await usersService.deleteBlog(req.params.id)
+    let result = await usersService.deleteUser(req.params.id)
     if (result) {
         res.sendStatus(204)
     } else {

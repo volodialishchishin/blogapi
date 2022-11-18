@@ -1,6 +1,6 @@
-import {PostViewModel} from "../models/PostViewModel";
-import {BlogViewModel} from "../models/BlogViewModel";
-import {UserViewModel} from "../models/UserViewModel";
+import {PostViewModel} from "../models/Post/PostViewModel";
+import {BlogViewModel} from "../models/Blog/BlogViewModel";
+import {UserViewModel} from "../models/User/UserViewModel";
 
 export const Helpers = {
     postsMapperToView(post:PostViewModel): PostViewModel{

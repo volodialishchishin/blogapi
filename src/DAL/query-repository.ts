@@ -1,9 +1,10 @@
-import {blogsCollection, postsCollection, usersCollection} from "../DB/db";
-import {BlogViewModelWithQuery} from "../models/BlogViewModel";
+import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "../DB/db";
+import {BlogViewModelWithQuery} from "../models/Blog/BlogViewModel";
 import {Helpers} from "../helpers/helpers";
-import {PostViewModelWithQuery} from "../models/PostViewModel";
+import {PostViewModelWithQuery} from "../models/Post/PostViewModel";
 import {blogsRepository} from "./blogs-repository";
-import {userViewModelWithQuery} from "../models/UserViewModel";
+import {userViewModelWithQuery} from "../models/User/UserViewModel";
+import {CommentViewModelWithQuery} from "../models/Comment/CommentViewModel";
 
 export const queryRepository = {
     async getBlogsByBlogId(
@@ -36,13 +37,13 @@ export const queryRepository = {
         sortDirection: 'asc' | 'desc'
     ): Promise<userViewModelWithQuery> {
         let result = await usersCollection.find({
-            $or:[
+            $or: [
                 {login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'}},
                 {email: searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}}
             ]
         }).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allUsers = await usersCollection.find({
-            $or:[
+            $or: [
                 {login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'}},
                 {email: searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}}
             ]
@@ -54,6 +55,24 @@ export const queryRepository = {
             pageSize: Number(pageSize),
             totalCount: allUsers.length,
             items: result.map(Helpers.userMapperToView)
+        }
+    },
+    async getComments(
+        postId: string,
+        pageNumber: number,
+        sortBy: string,
+        pageSize: number,
+        sortDirection: 'asc' | 'desc'
+    ): Promise<CommentViewModelWithQuery> {
+        let result = await commentsCollection.find({id: postId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
+        const allComments = await commentsCollection.find({id: postId}).toArray()
+        const pagesCount = Math.ceil(allComments.length / pageSize)
+        return {
+            pagesCount: Number(pagesCount),
+            page: Number(pageNumber),
+            pageSize: Number(pageSize),
+            totalCount: allComments.length,
+            items: result
         }
     },
     async getBlogs(

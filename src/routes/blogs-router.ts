@@ -6,15 +6,15 @@ import {
     RequestWithQuery
 } from "../types/types";
 import {body, query} from "express-validator";
-import {BlogViewModel, BlogViewModelWithQuery} from "../models/BlogViewModel";
-import {BlogInputModel} from "../models/BlogInputModel";
+import {BlogViewModel, BlogViewModelWithQuery} from "../models/Blog/BlogViewModel";
+import {BlogInputModel} from "../models/Blog/BlogInputModel";
 import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
-import {ErrorModel} from "../models/Error";
+import {ErrorModel} from "../models/Error/Error";
 import {authMiddleware} from "../middlwares/auth-middleware";
 import {blogsService} from "../services/blogs-service";
-import {BlogPostInputModel} from "../models/BlogPostInputModel";
+import {BlogPostInputModel} from "../models/Blog/BlogPostInputModel";
 import {postsService} from "../services/posts-service";
-import {PostViewModel, PostViewModelWithQuery} from "../models/PostViewModel";
+import {PostViewModel, PostViewModelWithQuery} from "../models/Post/PostViewModel";
 import {queryRepository} from "../DAL/query-repository";
 
 export const blogsRouter = Router()

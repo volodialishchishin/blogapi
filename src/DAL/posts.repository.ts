@@ -1,5 +1,5 @@
 import {postsCollection} from "../DB/db";
-import {PostViewModel} from "../models/PostViewModel";
+import {PostViewModel} from "../models/Post/PostViewModel";
 import {Helpers} from "../helpers/helpers";
 export const postsRepository = {
     async getPosts(): Promise<PostViewModel[]> {

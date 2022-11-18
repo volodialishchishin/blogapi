@@ -1,7 +1,7 @@
-import {UserViewModel} from "../models/UserViewModel";
+import {UserViewModel} from "../models/User/UserViewModel";
 import bcrypt from 'bcrypt'
 import {usersRepository} from "../DAL/users-repository";
-import {UserModel} from "../models/User";
+import {UserModel} from "../models/User/User";
 
 export const usersService = {
     async createUser(login:string,email:string,password:string): Promise<UserViewModel> {
@@ -18,19 +18,16 @@ export const usersService = {
         return usersRepository.createUser(newUser)
 
     },
-    async deleteBlog(id: string): Promise<boolean> {
-        return  await usersRepository.deleteBlog(id)
+    async deleteUser(id: string): Promise<boolean> {
+        return  await usersRepository.deleteUser(id)
     },
     async generateHash(password:string,salt:string){
         return await bcrypt.hash(password, salt)
     },
-    async checkCredentials(login:string,password:string): Promise<boolean> {
+    async checkCredentials(login:string,password:string): Promise<UserModel | null | undefined> {
         const user = await usersRepository.getUserByLogin(login)
-        console.log(user)
-        if (!user) return false
+        if (!user) return null
         const passwordHash = await this.generateHash(password,user.passwordSalt)
-        console.log(user.password,passwordHash)
-        return user.password === passwordHash;
-
+        if (user.password === passwordHash) return user
     },
 }

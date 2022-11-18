@@ -1,4 +1,4 @@
-import {BlogViewModel} from "../models/BlogViewModel";
+import {BlogViewModel} from "../models/Blog/BlogViewModel";
 import {blogsRepository} from "../DAL/blogs-repository";
 
 export const blogsService = {

@@ -1,5 +1,5 @@
 import {blogsCollection} from "../DB/db";
-import {BlogViewModel} from "../models/BlogViewModel";
+import {BlogViewModel} from "../models/Blog/BlogViewModel";
 import {Helpers} from "../helpers/helpers";
 
 export const blogsRepository = {

@@ -1,4 +1,4 @@
-import {PostViewModel} from "../models/PostViewModel";
+import {PostViewModel} from "../models/Post/PostViewModel";
 import {blogsRepository} from "../DAL/blogs-repository";
 import {Helpers} from "../helpers/helpers";
 import {postsRepository} from "../DAL/posts.repository";
@@ -28,10 +28,6 @@ export const postsService = {
         else{
             return null
         }
-
-
-
-
     },
     async updatePost(blogId: string, title: string, content: string, shortDescription: string, id: string): Promise<boolean> {
         return await postsRepository.updatePost(blogId, title, content, shortDescription, id)
