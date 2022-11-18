@@ -6,18 +6,15 @@ dotenv.config()
 
 export const jwtService = {
     createJWT(user: UserModel) {
-        if (!process.env.SECRET) {
-            throw new Error('Url does not exist')
-        }
-        return jwt.sign({user: user.id}, process.env.SECRET, {expiresIn: '1h'})
+        return jwt.sign({user: user.id}, process.env.SECRET || 'Ok', {expiresIn: '1h'})
     },
 
     getUserIdByToken(token: string) {
         try {
-            if (process.env.SECRET) {
-                const result:any = jwt.verify(token, process.env.SECRET)
+
+                const result:any = jwt.verify(token, process.env.SECRET||'Ok')
                 return result.user
-            }
+
 
         } catch (e) {
             return null
