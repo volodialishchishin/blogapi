@@ -137,6 +137,7 @@ postsRouter.get('/:id/comments',
         const pageSize = req.query.pageSize || 10
         const sortDirection = req.query.sortDirection || 'desc'
         console.log(req.params.id)
-        res.status(200).json(await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection))
+        let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection)
+        result.items.length ? res.status(200).json(result):res.sendStatus(404)
     })
 
