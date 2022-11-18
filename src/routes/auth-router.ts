@@ -16,7 +16,7 @@ authRouter.post('/login',
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
         const {login='', password='',email=''} = req.body
         const user = await usersService.checkCredentials(login, password,email)
-        console.log(user)
+        console.log('fsdfd',user)
         if (user) {
             const token = jwtService.createJWT(user)
             res.status(200).json({token})

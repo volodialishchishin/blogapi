@@ -25,12 +25,15 @@ export const usersService = {
     async generateHash(password:string,salt:string){
         return await bcrypt.hash(password, salt)
     },
-    async checkCredentials(login:string,email:string,password:string): Promise<UserModel | null | undefined> {
+    async checkCredentials(login:string,password:string,email:string): Promise<UserModel | null | undefined> {
         const user = await usersRepository.getUserByLoginOrEmail(login,email)
-        console.log('fsdfsdfsd',user)
+        console.log(user)
         if (!user) return null
         const passwordHash = await this.generateHash(password,user.passwordSalt)
         console.log(user.password === passwordHash,user.password,passwordHash)
-        if (user.password === passwordHash) return user
+        if (user.password === passwordHash) {
+            console.log('fsdffdsrgdsgvdfsgsdgfg')
+            return user
+        }
     },
 }

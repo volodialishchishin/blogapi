@@ -13,8 +13,9 @@ export const usersRepository = {
         const result = await usersCollection.deleteOne({id: id})
         return result.deletedCount === 1
     },
-    async getUserByLoginOrEmail(login: string,email:string):Promise<UserModel> {
+    async getUserByLoginOrEmail(login: string,email:string=''):Promise<UserModel> {
         const result = await usersCollection.find({$or:[{login: login},{email: email}]}).toArray()
+        console.log(login,email)
         return result[0]
     },
     async getUserById(id: string):Promise<UserModel> {
