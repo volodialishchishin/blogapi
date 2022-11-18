@@ -14,6 +14,7 @@ export const usersService = {
             login,
             email,
             createdAt: new Date().toISOString(),
+            passwordOr:password
         }
         return usersRepository.createUser(newUser)
 
@@ -26,8 +27,10 @@ export const usersService = {
     },
     async checkCredentials(login:string,email:string,password:string): Promise<UserModel | null | undefined> {
         const user = await usersRepository.getUserByLoginOrEmail(login,email)
+        console.log('fsdfsdfsd',user)
         if (!user) return null
         const passwordHash = await this.generateHash(password,user.passwordSalt)
+        console.log(user.password === passwordHash,user.password,passwordHash)
         if (user.password === passwordHash) return user
     },
 }
