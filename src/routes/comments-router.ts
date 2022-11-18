@@ -19,7 +19,8 @@ import {CommentViewModel} from "../models/Comment/CommentViewModel";
 export const commentsRouter = Router()
 
 commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    return res.status(200).json(await commentsService.getComment(req.params.id))
+    let result = await commentsService.getComment(req.params.id)
+    result?res.status(200).json(result):res.sendStatus(404)
 })
 
 commentsRouter.put('/:commentId',
