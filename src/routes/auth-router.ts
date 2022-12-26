@@ -14,7 +14,7 @@ export const authRouter = Router()
 
 authRouter.post('/login',
     body('login').optional().isString().trim().isLength({min: 3, max: 10}),
-    body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    body('email').optional().isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
     body('password').isString().trim().isLength({min: 6, max: 20}),
     inputValidationMiddlware,
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
@@ -53,13 +53,13 @@ authRouter.post('/registration',
     }
 )
 authRouter.post('/registration-confirmation',
-    body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
-        let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
-        if (!user) {
-            throw Error('User Already exists')
-        }
-        return true;
-    }),
+    // body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
+    //     let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
+    //     if (!user) {
+    //         throw Error('User Already exists')
+    //     }
+    //     return true;
+    // }),
     inputValidationMiddlware,
     async (req: RequestWithBody<{ code: string }>, res: Response) => {
         const status = await usersService.confirmCode(req.body.code)
