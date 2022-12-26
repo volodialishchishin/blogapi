@@ -57,15 +57,15 @@ blogsRouter.get('/:blogId/posts', query('searchNameTerm').isString(),
 blogsRouter.post('/',
     authMiddleware,
     body('name').isString().trim().isLength({min: 1, max: 15}),
-    body('youtubeUrl').isString().trim().isLength({
+    body('websiteUrl').isString().trim().isLength({
         min: 1,
         max: 100
     }).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
     inputValidationMiddlware,
     async (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
-        const {name, youtubeUrl} = req.body
+        const {name, websiteUrl} = req.body
         console.log('im here')
-        let result = await blogsService.createBlog(name, youtubeUrl)
+        let result = await blogsService.createBlog(name, websiteUrl)
         console.log('im here1')
         res.status(201).json(result)
     }
@@ -74,14 +74,14 @@ blogsRouter.post('/',
 blogsRouter.put('/:id',
     authMiddleware,
     body('name').isString().trim().isLength({min: 1, max: 15}),
-    body('youtubeUrl').isString().trim().isLength({
+    body('websiteUrl').isString().trim().isLength({
         min: 1,
         max: 100
     }).matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/),
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{ id: string }, BlogInputModel>, res: Response<ErrorModel>) => {
-        const {name, youtubeUrl} = req.body
-        let result = await blogsService.updateBlog(name, youtubeUrl, req.params.id)
+        const {name, websiteUrl} = req.body
+        let result = await blogsService.updateBlog(name, websiteUrl, req.params.id)
         if (result) {
             res.sendStatus(204)
         } else {

@@ -6,19 +6,19 @@ export const blogsService = {
         return blogsRepository.getBlogs()
     },
 
-    async createBlog(name: string, youtubeUrl: string): Promise<BlogViewModel> {
+    async createBlog(name: string, websiteUrl: string): Promise<BlogViewModel> {
         const newBlog: BlogViewModel = {
             id: Number(new Date).toString(),
             name,
-            youtubeUrl,
+            websiteUrl,
             createdAt: new Date().toISOString()
         }
         return blogsRepository.createBlog(newBlog)
 
     }
     ,
-    async updateBlog(name: string, youtubeUrl: string, id: string): Promise<boolean> {
-        return blogsRepository.updateBlog(name ,youtubeUrl, id)
+    async updateBlog(name: string, websiteUrl: string, id: string): Promise<boolean> {
+        return blogsRepository.updateBlog(name ,websiteUrl, id)
 
     },
     async deleteBlog(id: string): Promise<boolean> {

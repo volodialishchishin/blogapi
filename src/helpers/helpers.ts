@@ -21,7 +21,7 @@ export const Helpers = {
             id: blog.id,
             name: blog.name,
             createdAt: blog.createdAt,
-            youtubeUrl: blog.youtubeUrl,
+            websiteUrl: blog.websiteUrl,
         }
     },
     userMapperToView(user: UserModel): UserViewModel{

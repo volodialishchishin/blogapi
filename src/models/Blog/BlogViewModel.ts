@@ -1,7 +1,7 @@
 export type BlogViewModel = {
     id: string
     name: string
-    youtubeUrl: string
+    websiteUrl: string
     createdAt:string
 }
 export type BlogViewModelWithQuery = {

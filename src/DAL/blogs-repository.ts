@@ -13,10 +13,10 @@ export const blogsRepository = {
         return Helpers.blogsMapperToView(blog)
 
     },
-    async updateBlog(name: string, youtubeUrl: string, id: string): Promise<boolean> {
+    async updateBlog(name: string, websiteUrl: string, id: string): Promise<boolean> {
         let result = await blogsCollection.updateOne(
             {id: id},
-            {$set: {youtubeUrl: youtubeUrl, name: name}}
+            {$set: {websiteUrl: websiteUrl, name: name}}
         );
         return result.matchedCount === 1
 
