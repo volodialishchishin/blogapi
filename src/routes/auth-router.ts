@@ -55,7 +55,8 @@ authRouter.post('/registration',
 authRouter.post('/registration-confirmation',
     body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
         let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
-        if (user && (user.emailConfirmation.isConfirmed ||!user.emailConfirmation.confirmationCode)) {
+        console.log(user)
+        if (user?.emailConfirmation?.isConfirmed ||!user?.emailConfirmation?.confirmationCode) {
             throw Error('User Already exists')
         }
         return true;
@@ -71,7 +72,7 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
     let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
-    if  (user && (user.emailConfirmation.isConfirmed ||!user.emailConfirmation.confirmationCode) ) {
+    if  (user?.emailConfirmation?.isConfirmed ||!user?.emailConfirmation?.confirmationCode) {
         throw Error('User Already exists')
     }
     return true;
