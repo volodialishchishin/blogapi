@@ -78,7 +78,7 @@ authRouter.post('/registration-email-resending',
     let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
 
         let isEmailExists = await emailValidator.validate(req.body.email)
-        console.log(isEmailExists)
+        console.log(user)
     if  (user?.emailConfirmation?.isConfirmed || !isEmailExists.valid ) {
         throw Error('User Already exists')
     }
