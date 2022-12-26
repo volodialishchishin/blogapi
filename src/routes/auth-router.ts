@@ -9,6 +9,9 @@ import {usersRepository} from "../DAL/users-repository";
 import {RegisterModelInput} from "../models/Registration/RegisterModelInput";
 import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
 import {mailService} from "../services/mail-service";
+import {usersCollection} from "../DB/db";
+import {v4} from 'uuid'
+
 
 export const authRouter = Router()
 
@@ -62,6 +65,7 @@ authRouter.post('/registration-confirmation',
     // }),
     inputValidationMiddlware,
     async (req: RequestWithBody<{ code: string }>, res: Response) => {
+
         const status = await usersService.confirmCode(req.body.code)
         if (status) {
             res.sendStatus(204)
@@ -80,7 +84,9 @@ authRouter.post('/registration-email-resending',
     async (req: RequestWithBody<{ email: string }>, res: Response) => {
         let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
         if (user){
-            await mailService.sendMailConfirmation(user,true)
+            let newCode = v4()
+            await usersCollection.updateOne({id:user.id},{$set:{"emailConfirmation.confirmationCode":newCode}})
+            await mailService.sendMailConfirmation(user,true,newCode)
             res.sendStatus(204)
         }
         else{

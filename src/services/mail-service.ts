@@ -3,8 +3,11 @@ import {transporter} from "../Adapters/mail.adapter";
 import {v4} from 'uuid'
 
 export const mailService = {
-    async sendMailConfirmation(user: UserModel, resend:boolean = false) {
-        let url = `https://somesite.com/confirm-email?code=${resend?v4():user.emailConfirmation.confirmationCode}`
+    async sendMailConfirmation(user: UserModel, resend:boolean = false,newCode:string='') {
+        console.log(user)
+        let url = `https://somesite.com/confirm-email?code=${resend?newCode:user.emailConfirmation.confirmationCode}`
+
+        console.log(url)
         let info = await transporter.sendMail({
             from: 'Volodia',
             to: user.accountData.email,

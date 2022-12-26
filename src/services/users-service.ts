@@ -70,6 +70,7 @@ export const usersService = {
     },
     async confirmCode(code:string):Promise<boolean|null>{
         const user = await usersRepository.getUserByCode(code)
+        console.log(user)
         if (user && user.emailConfirmation.confirmationCode === code){
             return await usersRepository.confirmCode(user.id)
         }
