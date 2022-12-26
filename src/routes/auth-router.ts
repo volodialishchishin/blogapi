@@ -55,7 +55,7 @@ authRouter.post('/registration',
 authRouter.post('/registration-confirmation',
     body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
         let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
-        if (!user?.emailConfirmation?.confirmationCode) {
+        if (!user) {
             throw Error('User Already exists')
         }
         return true;
@@ -80,7 +80,7 @@ authRouter.post('/registration-email-resending',
     async (req: RequestWithBody<{ email: string }>, res: Response) => {
         let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
         if (user){
-            await mailService.sendMailConfirmation(user)
+            await mailService.sendMailConfirmation(user,true)
             res.sendStatus(204)
         }
         else{

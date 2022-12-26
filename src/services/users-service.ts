@@ -7,30 +7,6 @@ import add from 'date-fns/add'
 import {mailService} from "./mail-service";
 
 export const usersService = {
-    async createUser(login:string,email:string,password:string): Promise<UserViewModel> {
-        const passwordSalt = await bcrypt.genSalt(10)
-        const passwordHash = await this.generateHash(password,passwordSalt)
-        const newUser:UserModel = {
-            id: v4(),
-            accountData:{
-                password: passwordHash,
-                passwordSalt: passwordSalt,
-                login,
-                email,
-                createdAt: new Date().toISOString(),
-            },
-            emailConfirmation:{
-                confirmationCode:v4(),
-                confirmationDate: add(new Date(),{
-                    hours:1,
-                    minutes:3
-                }),
-                isConfirmed:false
-            }
-
-        }
-        return usersRepository.createUser(newUser)
-    },
     async createSuperUser(login:string,email:string,password:string): Promise<UserViewModel> {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.generateHash(password,passwordSalt)
