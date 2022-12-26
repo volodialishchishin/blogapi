@@ -1,5 +1,4 @@
 export type LoginInputModel = {
-    login:string,
-    email:string,
+    loginOrEmail:string,
     password:string
 }

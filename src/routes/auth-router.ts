@@ -21,8 +21,7 @@ authRouter.post('/login',
     body('password').isString().trim().isLength({min: 6, max: 20}),
     inputValidationMiddlware,
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
-        const {login = '', password = '', email = ''} = req.body
-        const user = await usersService.checkCredentials(login, password, email)
+        const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password, req.body.loginOrEmail)
         if (user) {
             const token = jwtService.createJWT(user)
              res.status(200).json({accessToken: token})
@@ -56,13 +55,13 @@ authRouter.post('/registration',
     }
 )
 authRouter.post('/registration-confirmation',
-    // body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
-    //     let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
-    //     if (!user) {
-    //         throw Error('User Already exists')
-    //     }
-    //     return true;
-    // }),
+    body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
+        let user = await usersRepository.getUserByCode(req.body.code)
+        if (user.emailConfirmation.confirmationCode || !user.emailConfirmation?.confirmationCode) {
+            throw Error('User Already exists')
+        }
+        return true;
+    }),
     inputValidationMiddlware,
     async (req: RequestWithBody<{ code: string }>, res: Response) => {
 
@@ -74,7 +73,7 @@ authRouter.post('/registration-confirmation',
 )
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
-    let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
+    let user = await usersRepository.getUserByLoginOrEmail(req.body.email)
     if  (user?.emailConfirmation?.isConfirmed) {
         throw Error('User Already exists')
     }
