@@ -40,7 +40,7 @@ usersRouter.post('/',
     inputValidationMiddlware,
     async (req: RequestWithBody<UserInputModel>, res: Response<UserViewModel>) => {
         const {login, password, email} = req.body
-        let result = await usersService.createUser(login,email,password)
+        let result = await usersService.createSuperUser(login,email,password)
         res.status(201).json(result)
     })
 

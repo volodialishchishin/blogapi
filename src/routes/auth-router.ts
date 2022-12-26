@@ -6,6 +6,9 @@ import {LoginInputModel} from "../models/Login/LoginInputModel";
 import {jwtService} from "../Application/jwt-service";
 import {authMiddlewareJwt} from "../middlwares/auth-middleware-jwt";
 import {usersRepository} from "../DAL/users-repository";
+import {RegisterModelInput} from "../models/Registration/RegisterModelInput";
+import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
+import {mailService} from "../services/mail-service";
 
 export const authRouter = Router()
 
@@ -14,26 +17,73 @@ authRouter.post('/login',
     body('email').optional().isString().trim().isLength({min: 3, max: 10}),
     body('password').isString().trim().isLength({min: 6, max: 20}),
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
-        const {login='', password='',email=''} = req.body
-        const user = await usersService.checkCredentials(login, password,email)
-        console.log('fsdfd',user)
+        const {login = '', password = '', email = ''} = req.body
+        const user = await usersService.checkCredentials(login, password, email)
         if (user) {
             const token = jwtService.createJWT(user)
-            res.status(200).json({accessToken:token})
+             res.status(200).json({accessToken: token})
         } else {
             res.sendStatus(401)
+        }
+    }
+)
+authRouter.post('/registration',
+    body('login').isString().trim().isLength({min: 3, max: 10}).custom(async (value, {req}) => {
+        let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
+        if (user) {
+            throw Error('User Already exists')
+        }
+        return true;
+    }),
+    body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
+        let user = await usersRepository.getUserByLoginOrEmail('', req.body.email)
+        if (user) {
+            throw Error('User Already exists')
+        }
+        return true;
+    }),
+    body('password').isString().trim().isLength({min: 6, max: 20}),
+    inputValidationMiddlware,
+    async (req: RequestWithBody<RegisterModelInput>, res: Response) => {
+        const user = await usersService.saveUser(req.body.login, req.body.email, req.body.password)
+        if (user) {
+            res.sendStatus(204)
+        } else res.sendStatus(400)
+    }
+)
+authRouter.post('/registration-confirmation',
+    body('code').isString().trim().isLength({min: 1}),
+    inputValidationMiddlware,
+    async (req: RequestWithBody<{ code: string }>, res: Response) => {
+        const status = await usersService.confirmCode(req.body.code)
+        if (status) {
+            res.sendStatus(204)
+        } else res.sendStatus(400)
+    }
+)
+authRouter.post('/registration-email-resending',
+    body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    inputValidationMiddlware,
+    async (req: RequestWithBody<{ email: string }>, res: Response) => {
+        let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
+        if (user){
+            await mailService.sendMailConfirmation(user)
+            res.sendStatus(204)
+        }
+        else{
+            res.sendStatus(400)
         }
     }
 )
 authRouter.get('/me',
     authMiddlewareJwt,
     async (req: Request, res: Response) => {
-        const user = req.context.user?.id ? await usersRepository.getUserById(req.context.user?.id ) : null
-        if (user) {
+        const user = req.context.user?.id ? await usersRepository.getUserById(req.context.user?.id) : null
+        if (user && user.emailConfirmation.isConfirmed) {
             res.status(200).json({
-                email:user.email,
-                login:user.login,
-                userId:user.id
+                email: user.accountData.email,
+                login: user.accountData.login,
+                userId: user.id
             })
         } else {
             res.sendStatus(401)

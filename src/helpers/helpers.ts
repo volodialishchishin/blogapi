@@ -2,6 +2,7 @@ import {PostViewModel} from "../models/Post/PostViewModel";
 import {BlogViewModel} from "../models/Blog/BlogViewModel";
 import {UserViewModel} from "../models/User/UserViewModel";
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
+import {UserModel} from "../models/User/User";
 
 export const Helpers = {
     postsMapperToView(post:PostViewModel): PostViewModel{
@@ -23,12 +24,12 @@ export const Helpers = {
             youtubeUrl: blog.youtubeUrl,
         }
     },
-    userMapperToView(user:UserViewModel): UserViewModel{
+    userMapperToView(user: UserModel): UserViewModel{
         return {
             id: user.id,
-            email: user.email,
-            createdAt: user.createdAt,
-            login:user.login
+            email: user.accountData.email,
+            createdAt: user.accountData.createdAt,
+            login:user.accountData.login
         }
     },
     commentsMapperToView(comment:CommentViewModel): CommentViewModel{

@@ -120,7 +120,7 @@ postsRouter.post('/:id/comments',
           res.sendStatus(404)
         }
         else{
-            let result = await commentsService.createComment(req.params.id, content, user!.id, user!.login)
+            let result = await commentsService.createComment(req.params.id, content, user!.id, user!.accountData.login)
             res.status(201).json(result)
         }
     }

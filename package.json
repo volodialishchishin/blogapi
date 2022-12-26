@@ -4,15 +4,21 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@types/date-fns": "^2.6.0",
     "@types/dotenv": "^8.2.0",
     "@types/jsonwebtoken": "^8.5.9",
+    "@types/nodemailer": "^6.4.7",
+    "@types/uuid": "^9.0.0",
     "bcrypt": "^5.1.0",
     "crypto-xor": "^2.1.0",
+    "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
     "express": "^4.17.3",
     "express-validator": "^6.14.1",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^4.11.0"
+    "mongodb": "^4.11.0",
+    "nodemailer": "^6.8.0",
+    "uuid": "^9.0.0"
   },
   "scripts": {
     "dev": "nodemon --inspect dist/index.js",
