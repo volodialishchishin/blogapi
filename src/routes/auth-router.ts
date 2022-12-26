@@ -14,8 +14,9 @@ export const authRouter = Router()
 
 authRouter.post('/login',
     body('login').optional().isString().trim().isLength({min: 3, max: 10}),
-    body('email').optional().isString().trim().isLength({min: 3, max: 10}),
+    body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
     body('password').isString().trim().isLength({min: 6, max: 20}),
+    inputValidationMiddlware,
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
         const {login = '', password = '', email = ''} = req.body
         const user = await usersService.checkCredentials(login, password, email)
@@ -54,7 +55,7 @@ authRouter.post('/registration',
 authRouter.post('/registration-confirmation',
     body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
         let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
-        if (user.emailConfirmation.isConfirmed ||!user.emailConfirmation.confirmationCode ) {
+        if (user && (user.emailConfirmation.isConfirmed ||!user.emailConfirmation.confirmationCode)) {
             throw Error('User Already exists')
         }
         return true;
@@ -70,7 +71,7 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
     let user = await usersRepository.getUserByLoginOrEmail(req.body.login)
-    if  (user.emailConfirmation.isConfirmed ||!user.emailConfirmation.confirmationCode ) {
+    if  (user && (user.emailConfirmation.isConfirmed ||!user.emailConfirmation.confirmationCode) ) {
         throw Error('User Already exists')
     }
     return true;
