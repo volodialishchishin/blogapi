@@ -5,7 +5,6 @@ import {v4} from 'uuid'
 export const mailService = {
     async sendMailConfirmation(user: UserModel, resend:boolean = false) {
         let url = `https://somesite.com/confirm-email?code=${resend?v4():user.emailConfirmation.confirmationCode}`
-        console.log(user.accountData.email)
         let info = await transporter.sendMail({
             from: 'Volodia',
             to: user.accountData.email,
@@ -13,6 +12,5 @@ export const mailService = {
             text: "Confirm your account",
             html: `<a href=${url}>${url}</a>`
         });
-        console.log(info)
     }
 }

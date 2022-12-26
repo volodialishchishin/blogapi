@@ -20,7 +20,6 @@ export const commentsCollection = client.db().collection<CommentModel>('comments
 
 export const runDb = async ()=>{
     try {
-        console.log('success')
         await client.connect()
     } catch (e) {
         await client.close()

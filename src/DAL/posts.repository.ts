@@ -8,7 +8,6 @@ export const postsRepository = {
     },
 
     async createPost(post:PostViewModel): Promise<void> {
-        console.log(post)
         await postsCollection.insertOne(post)
     },
     async updatePost(blogId:string,title:string,content:string,shortDescription:string,id:string): Promise<boolean> {
@@ -24,7 +23,6 @@ export const postsRepository = {
     },
     async deletePost(id:string): Promise<boolean> {
         const result = await postsCollection.deleteOne({id:id})
-        console.log(result)
         return result.deletedCount === 1
 
     },

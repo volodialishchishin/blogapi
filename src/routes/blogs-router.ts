@@ -43,7 +43,6 @@ blogsRouter.get('/:blogId/posts', query('searchNameTerm').isString(),
 
         const sortBy = req.query.sortBy || 'createdAt'
         const pageSize = req.query.pageSize || 10
-        console.log(pageSize)
         const sortDirection = req.query.sortDirection || 'desc'
         let result = await queryRepository.getBlogsByBlogId(req.params.blogId, pageNumber, sortBy, pageSize, sortDirection)
         if (result){
@@ -64,9 +63,7 @@ blogsRouter.post('/',
     inputValidationMiddlware,
     async (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
         const {name, websiteUrl} = req.body
-        console.log('im here')
         let result = await blogsService.createBlog(name, websiteUrl)
-        console.log('im here1')
         res.status(201).json(result)
     }
 )

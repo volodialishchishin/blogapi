@@ -23,7 +23,6 @@ export const commentsRepository = {
     },
     async getCommentById(id: string): Promise<CommentViewModel | undefined> {
         let comment = await commentsCollection.find({id: id}).toArray()
-        console.log(comment)
         if (comment.length){
             return Helpers.commentsMapperToView(comment[0])
         }

@@ -13,7 +13,6 @@ export const jwtService = {
         try {
 
             const result: any = jwt.verify(token, process.env.SECRET || 'Ok')
-            console.log(result)
             return result.user
 
 

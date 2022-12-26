@@ -10,7 +10,6 @@ export const postsService = {
 
     createPost: async function (blogId: string, title: string, content: string, shortDescription: string): Promise<PostViewModel|null> {
         let blogger = await blogsRepository.getBlog(blogId)
-        console.log(blogger)
         let newPost:PostViewModel
         if (blogger){
              newPost = {

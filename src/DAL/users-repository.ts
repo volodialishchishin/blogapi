@@ -18,7 +18,6 @@ export const usersRepository = {
     },
     async getUserByLoginOrEmail(login: string,email:string=''):Promise<UserModel> {
         const result = await usersCollection.find({$or:[{"accountData.login":login},{"accountData.email":email}]}).toArray()
-        console.log('dasdad',result)
         return result[0]
     },
     async getUserByCode(code:string):Promise<UserModel> {

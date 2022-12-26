@@ -28,6 +28,5 @@ app.delete('/testing/all-data',async (req,res)=>{
 })
 app.listen(port,async ()=>{
     await runDb()
-    console.log(`Server working on ${port}`)
 })
 
