@@ -12,7 +12,7 @@ import {mailService} from "../services/mail-service";
 import {usersCollection} from "../DB/db";
 import {v4} from 'uuid'
 
-const emailCheck = require('email-check');
+import emailCheck from 'email-check';
 
 
 export const authRouter = Router()
@@ -80,7 +80,7 @@ authRouter.post('/registration-email-resending',
 
         let isEmailExists = await emailCheck(req.body.email)
         console.log(isEmailExists)
-    if  (user?.emailConfirmation?.isConfirmed || !isEmailExists.valid ) {
+    if  (user?.emailConfirmation?.isConfirmed || !isEmailExists ) {
         throw Error('User Already exists')
     }
     return true;

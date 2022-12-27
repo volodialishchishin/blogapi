@@ -6,6 +6,7 @@
   "dependencies": {
     "@types/date-fns": "^2.6.0",
     "@types/dotenv": "^8.2.0",
+    "@types/email-check": "^1.1.1",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/nodemailer": "^6.4.7",
     "@types/uuid": "^9.0.0",
