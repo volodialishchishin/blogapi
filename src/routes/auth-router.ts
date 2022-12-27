@@ -11,9 +11,8 @@ import {inputValidationMiddlware} from "../middlwares/input-validation-middlware
 import {mailService} from "../services/mail-service";
 import {usersCollection} from "../DB/db";
 import {v4} from 'uuid'
-import emailCheck from 'email-check';
 
-var verifier = require('email-exist');
+import emailCheck from 'email-check';
 
 
 export const authRouter = Router()
@@ -60,8 +59,8 @@ authRouter.post('/registration',
 authRouter.post('/registration-confirmation',
     body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
         let user = await usersRepository.getUserByCode(req.body.code)
-        console.log(!user, user.emailConfirmation.confirmationCode, !user.emailConfirmation?.confirmationCode)
-        if (!user || user.emailConfirmation.isConfirmed || !user.emailConfirmation?.confirmationCode) {
+        console.log(!user,user.emailConfirmation.confirmationCode,!user.emailConfirmation?.confirmationCode )
+        if (!user || user.emailConfirmation.isConfirmed || !user.emailConfirmation?.confirmationCode  ) {
             throw Error('User Already exists')
         }
         return true;
@@ -77,32 +76,25 @@ authRouter.post('/registration-confirmation',
 )
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
-        let user = await usersRepository.getUserByLoginOrEmail('', req.body.email)
-        let success
-        verifier.verify(req.body.email, function (err: any, info: { success: string; info: string; response: string; }) {
-            if (err) {
-                throw Error('User Already exists')
-            } else {
-                success = info.success
-                console.log("Success: " + info.success);
-                console.log("Info: " + info.info);
-                console.log("Response from smtp: " + info.response);
-            }
-        });
-        if (user?.emailConfirmation?.isConfirmed || !success) {
+        let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
+
+        let isEmailExists = await emailCheck(req.body.email)
+        console.log(isEmailExists)
+        if  (user?.emailConfirmation?.isConfirmed || !isEmailExists ) {
             throw Error('User Already exists')
         }
         return true;
     }),
     inputValidationMiddlware,
     async (req: RequestWithBody<{ email: string }>, res: Response) => {
-        let user = await usersRepository.getUserByLoginOrEmail('', req.body.email)
-        if (user) {
+        let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
+        if (user){
             let newCode = v4()
-            await usersCollection.updateOne({id: user.id}, {$set: {"emailConfirmation.confirmationCode": newCode}})
-            await mailService.sendMailConfirmation(user, true, newCode)
+            await usersCollection.updateOne({id:user.id},{$set:{"emailConfirmation.confirmationCode":newCode}})
+            await mailService.sendMailConfirmation(user,true,newCode)
             res.sendStatus(204)
-        } else {
+        }
+        else{
             res.sendStatus(400)
         }
     }
