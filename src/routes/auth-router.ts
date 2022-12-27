@@ -11,6 +11,8 @@ import {inputValidationMiddlware} from "../middlwares/input-validation-middlware
 import {mailService} from "../services/mail-service";
 import {usersCollection} from "../DB/db";
 import {v4} from 'uuid'
+import emailValidator from 'deep-email-validator';
+
 
 import emailCheck from 'email-check';
 
@@ -77,10 +79,9 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
         let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
-
-        let isEmailExists = await emailCheck(req.body.email)
-        console.log(isEmailExists)
-        if  (user?.emailConfirmation?.isConfirmed || !isEmailExists ) {
+        let status = await isEmailValid(req.body.email)
+        console.log(status)
+        if  (user?.emailConfirmation?.isConfirmed || !status.valid) {
             throw Error('User Already exists')
         }
         return true;
@@ -99,6 +100,9 @@ authRouter.post('/registration-email-resending',
         }
     }
 )
+async function isEmailValid(email:string) {
+    return emailValidator(email)
+}
 authRouter.get('/me',
     authMiddlewareJwt,
     async (req: Request, res: Response) => {

@@ -15,5 +15,6 @@ export const mailService = {
             text: "Confirm your account",
             html: `<a href=${url}>${url}</a>`
         });
+
     }
 }
