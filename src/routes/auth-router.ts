@@ -11,7 +11,7 @@ import {inputValidationMiddlware} from "../middlwares/input-validation-middlware
 import {mailService} from "../services/mail-service";
 import {usersCollection} from "../DB/db";
 import {v4} from 'uuid'
-
+const EmailValidator = require('email-deep-validator');
 import emailCheck from 'email-check';
 
 
@@ -78,9 +78,10 @@ authRouter.post('/registration-email-resending',
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
     let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
 
-        let isEmailExists = await emailCheck(req.body.email)
-        console.log('here',user.emailConfirmation.isConfirmed, isEmailExists,req.body.email)
-    if  (user?.emailConfirmation?.isConfirmed || !isEmailExists ) {
+        const emailValidator = new EmailValidator();
+        const isEmailExists = await emailValidator.verify(req.body.email);
+        console.log('here',user.emailConfirmation.isConfirmed, isEmailExists.validDomain ,req.body.email)
+    if  ( user?.emailConfirmation?.isConfirmed || !isEmailExists.validDomain ) {
         throw Error('User Already exists')
     }
     return true;
