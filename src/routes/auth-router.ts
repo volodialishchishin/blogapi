@@ -12,6 +12,7 @@ import {mailService} from "../services/mail-service";
 import {usersCollection} from "../DB/db";
 import {v4} from 'uuid'
 import emailValidator from 'deep-email-validator';
+const emailExistence = require('email-existence')
 
 
 import emailCheck from 'email-check';
@@ -79,9 +80,7 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
         let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
-        let status = await isEmailValid(req.body.email)
-        console.log(status)
-        if  (user?.emailConfirmation?.isConfirmed || !status.valid) {
+        if  (user?.emailConfirmation?.isConfirmed || !req.body.email) {
             throw Error('User Already exists')
         }
         return true;
