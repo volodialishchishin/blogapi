@@ -17,6 +17,8 @@
     "dotenv": "^16.0.3",
     "email-check": "^1.1.0",
     "email-deep-validator": "^3.3.0",
+    "email-exist": "^1.1.7",
+    "email-existence": "^0.1.6",
     "express": "^4.17.3",
     "express-validator": "^6.14.1",
     "jsonwebtoken": "^8.5.1",
