@@ -80,7 +80,7 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
         let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
-        if  (user?.emailConfirmation?.isConfirmed || !req.body.email) {
+        if  (user?.emailConfirmation?.isConfirmed || !user) {
             throw Error('User Already exists')
         }
         return true;
