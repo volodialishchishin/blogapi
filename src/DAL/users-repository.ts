@@ -5,7 +5,8 @@ import {UserModel} from "../models/User/User";
 
 export const usersRepository = {
     async createUser(user:UserModel): Promise<UserViewModel> {
-        await usersCollection.insertOne(user)
+        let user1 = await usersCollection.insertOne(user)
+        console.log(user1)
         return Helpers.userMapperToView(user)
     },
     async deleteUser(id: string): Promise<boolean> {

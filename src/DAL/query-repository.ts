@@ -38,14 +38,14 @@ export const queryRepository = {
     ): Promise<userViewModelWithQuery> {
         let result = await usersCollection.find({
             $or: [
-                {login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'}},
-                {email: searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}}
+                {"accountData.login": searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'}},
+                {"accountData.email": searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}}
             ]
         }).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allUsers = await usersCollection.find({
             $or: [
-                {login: searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'}},
-                {email: searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}}
+                {"accountData.login": searchLoginTerm ? {$regex: searchLoginTerm, $options: 'gi'} : {$regex: '.'}},
+                {"accountData.email": searchEmailTerm ? {$regex: searchEmailTerm, $options: 'gi'} : {$regex: '.'}}
             ]
         }).toArray()
         const pagesCount = Math.ceil(allUsers.length / pageSize)
