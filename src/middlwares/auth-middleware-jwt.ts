@@ -11,9 +11,10 @@ export const authMiddlewareJwt = (async (req: Request, res: Response, next: Next
         return
     }
 
-    const userId = jwtService.getUserIdByToken(authToken)
-    if (userId) {
-        req.context = {user:await usersRepository.getUserById(userId)}
+    const user = jwtService.getUserIdByToken(authToken)
+    console.log(user)
+    if (user) {
+        req.context = {user:await usersRepository.getUserById(user.user)}
         if(req.context.user){
             return next()
         }
@@ -21,8 +22,4 @@ export const authMiddlewareJwt = (async (req: Request, res: Response, next: Next
     }
     res.sendStatus(401)
     return
-
-
-
-
 })

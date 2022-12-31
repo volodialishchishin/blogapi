@@ -31,8 +31,8 @@ authRouter.post('/login',
         if (user) {
             const token = jwtService.generateTokens(user)
             await jwtService.saveToken(user.id, token.refreshToken);
-            res.cookie('refreshToken', token.refreshToken, {secure:true})
-            res.status(200).json({accessToken: token.refreshToken})
+            res.cookie('refreshToken', token.refreshToken, {secure:true,httpOnly:true})
+            res.status(200).json({accessToken: token.accessToken})
         } else {
             res.sendStatus(401)
         }
@@ -44,8 +44,8 @@ authRouter.post('/refresh-token',
             const {refreshToken} = req.cookies;
             const tokens = await usersService.refresh(refreshToken);
             if (tokens){
-                res.cookie('refreshToken', tokens.refreshToken, {secure:true})
-                return res.json({accessToken: tokens.refreshToken});
+                res.cookie('refreshToken', tokens.refreshToken, {secure:true,httpOnly:true})
+                return res.json({accessToken: tokens.accessToken});
             }
 
         } catch (e) {
@@ -135,6 +135,10 @@ async function isEmailValid(email:string) {
 authRouter.get('/me',
     authMiddlewareJwt,
     async (req: Request, res: Response) => {
-        return req.context.user
+        return res.json({
+            email:req.context.user.accountData.email,
+            login:req.context.user.accountData.login,
+            userId :req.context.user.id
+        })
     }
 )

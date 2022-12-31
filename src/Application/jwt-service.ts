@@ -7,8 +7,8 @@ dotenv.config()
 
 export const jwtService = {
     generateTokens(user: UserModel) {
-        let accessToken =  jwt.sign({user: user.id,email:user.accountData.email,login:user.accountData.login,}, process.env.SECRET || 'Ok', {expiresIn: '10'})
-        let refreshToken =  jwt.sign({user: user.id}, process.env.SECRET || 'Ok', {expiresIn: '20'})
+        let accessToken =  jwt.sign({user: user.id,email:user.accountData.email,login:user.accountData.login,}, process.env.SECRET || 'Ok', {expiresIn: '2h'})
+        let refreshToken =  jwt.sign({user: user.id}, process.env.SECRET || 'Ok', {expiresIn: '2h'})
         return {
             accessToken,
             refreshToken
@@ -16,16 +16,14 @@ export const jwtService = {
     },
 
     getUserIdByToken(token: string) {
-        try {
+
             console.log(token)
             const result: any = jwt.verify(token, process.env.SECRET || 'Ok')
+        console.log(result)
             return result
 
 
 
-        } catch (e) {
-            return null
-        }
 
     },
     async saveToken(userId: string, refreshToken: string) {
