@@ -28,9 +28,38 @@ authRouter.post('/login',
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
         const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password, req.body.loginOrEmail)
         if (user) {
-            const token = jwtService.createJWT(user)
+            const token = jwtService.generateTokens(user)
+            await jwtService.saveToken(user.id, token.refreshToken);
+            res.cookie('refreshToken', token.refreshToken, {secure:true, httpOnly: true})
             res.status(200).json({accessToken: token})
         } else {
+            res.sendStatus(401)
+        }
+    }
+)
+authRouter.post('/refresh-token',
+    async (req: Request, res: Response) => {
+        try {
+            const {refreshToken} = req.cookies;
+            const tokens = await usersService.refresh(refreshToken);
+            if (tokens){
+                res.cookie('refreshToken', tokens.refreshToken, {secure:true, httpOnly: true})
+                return res.json(tokens.accessToken);
+            }
+
+        } catch (e) {
+            res.sendStatus(401)
+        }
+    }
+)
+authRouter.post('/logout',
+    async (req: Request, res: Response) => {
+        try {
+            const {refreshToken} = req.cookies;
+            await usersService.logout(refreshToken);
+            res.clearCookie('refreshToken');
+            res.sendStatus(204)
+        } catch (e) {
             res.sendStatus(401)
         }
     }

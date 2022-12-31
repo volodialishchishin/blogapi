@@ -5,7 +5,7 @@ export type UserModel = {
         email:string
         createdAt:string
         password:string
-        passwordSalt:string,
+        passwordSalt:string
     }
     id:string
     emailConfirmation:{
