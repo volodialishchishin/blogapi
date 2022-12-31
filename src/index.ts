@@ -7,6 +7,7 @@ import {blogsCollection, commentsCollection, postsCollection, runDb, usersCollec
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
+import cookieParser from "cookie-parser";
 export let blogs: Array<BlogViewModel> = []
 export let posts: Array<PostViewModel> = []
 const app = express()
@@ -14,6 +15,7 @@ const port =  process.env.PORT || 8001
 
 
 app.use(express.json())
+app.use(cookieParser());
 app.use('/blogs',blogsRouter)
 app.use('/posts',postsRouter)
 app.use('/users',usersRouter)

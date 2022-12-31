@@ -16,6 +16,7 @@ const emailExistence = require('email-existence')
 
 
 import emailCheck from 'email-check';
+import jwt from "jsonwebtoken";
 
 
 export const authRouter = Router()
@@ -30,8 +31,8 @@ authRouter.post('/login',
         if (user) {
             const token = jwtService.generateTokens(user)
             await jwtService.saveToken(user.id, token.refreshToken);
-            res.cookie('refreshToken', token.refreshToken, {secure:true, httpOnly: true})
-            res.status(200).json({accessToken: token})
+            res.cookie('refreshToken', token.refreshToken, {secure:true})
+            res.status(200).json({accessToken: token.refreshToken})
         } else {
             res.sendStatus(401)
         }
@@ -43,8 +44,8 @@ authRouter.post('/refresh-token',
             const {refreshToken} = req.cookies;
             const tokens = await usersService.refresh(refreshToken);
             if (tokens){
-                res.cookie('refreshToken', tokens.refreshToken, {secure:true, httpOnly: true})
-                return res.json(tokens.accessToken);
+                res.cookie('refreshToken', tokens.refreshToken, {secure:true})
+                return res.json({accessToken: tokens.refreshToken});
             }
 
         } catch (e) {
@@ -134,15 +135,6 @@ async function isEmailValid(email:string) {
 authRouter.get('/me',
     authMiddlewareJwt,
     async (req: Request, res: Response) => {
-        const user = req.context.user?.id ? await usersRepository.getUserById(req.context.user?.id) : null
-        if (user && user.emailConfirmation.isConfirmed) {
-            res.status(200).json({
-                email: user.accountData.email,
-                login: user.accountData.login,
-                userId: user.id
-            })
-        } else {
-            res.sendStatus(401)
-        }
+        return req.context.user
     }
 )

@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@types/cookie-parser": "^1.4.3",
     "@types/date-fns": "^2.6.0",
     "@types/dotenv": "^8.2.0",
     "@types/email-check": "^1.1.1",
@@ -11,6 +12,7 @@
     "@types/nodemailer": "^6.4.7",
     "@types/uuid": "^9.0.0",
     "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
     "crypto-xor": "^2.1.0",
     "date-fns": "^2.29.3",
     "deep-email-validator": "^0.1.21",

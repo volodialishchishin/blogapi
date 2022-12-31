@@ -10,8 +10,8 @@ export const authMiddlewareJwt = (async (req: Request, res: Response, next: Next
         res.sendStatus(401)
         return
     }
-    const userId = jwtService.getUserIdByToken(authToken)
 
+    const userId = jwtService.getUserIdByToken(authToken)
     if (userId) {
         req.context = {user:await usersRepository.getUserById(userId)}
         if(req.context.user){
