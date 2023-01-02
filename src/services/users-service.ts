@@ -82,9 +82,9 @@ export const usersService = {
     },
     async refresh(refreshToken: string) {
         const userData = jwtService.validateRefreshToken(refreshToken);
-        const tokenFromDb = await tokensCollection.find({refreshToken}).toArray();
+        const tokenFromDb = await tokensCollection.findOne({refreshToken:refreshToken});
         console.log(userData,'fsdfdsf',tokenFromDb)
-        if (!userData || !tokenFromDb.length) {
+        if (!userData || !tokenFromDb) {
             throw new Error();
         }
         const user = await usersRepository.getUserById(userData);
@@ -95,6 +95,7 @@ export const usersService = {
     async logout(refreshToken: string) {
         const result = jwt.verify(refreshToken, process.env.SECRET || 'Ok')
         const tokenData = await tokensCollection.deleteOne({refreshToken})
+        console.log('tokenData.deletedCount',tokenData.deletedCount)
         return tokenData.deletedCount;
     }
 }
