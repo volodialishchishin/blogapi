@@ -130,9 +130,7 @@ authRouter.post('/registration-email-resending',
         }
     }
 )
-async function isEmailValid(email:string) {
-    return emailValidator(email)
-}
+
 authRouter.get('/me',
     authMiddlewareJwt,
     async (req: Request, res: Response) => {

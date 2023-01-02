@@ -95,7 +95,9 @@ export const usersService = {
     async logout(refreshToken: string) {
         const result = jwt.verify(refreshToken, process.env.SECRET || 'Ok')
         const tokenData = await tokensCollection.deleteOne({refreshToken})
-        console.log('tokenData.deletedCount',tokenData.deletedCount)
+        if (!tokenData.deletedCount){
+            throw new Error()
+        }
         return tokenData.deletedCount;
     }
 }
