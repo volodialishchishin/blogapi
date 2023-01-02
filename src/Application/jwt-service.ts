@@ -24,8 +24,8 @@ export const jwtService = {
             }
     },
     async saveToken(userId: string, refreshToken: string) {
-        const tokenData = await tokensCollection.findOne({userId: userId})
-        if (tokenData) {
+        const tokenData = await tokensCollection.find({userId: userId}).toArray()
+        if (tokenData.length) {
             let status = await tokensCollection.updateOne({userId: userId},{$set:{refreshToken}})
             console.log('status.modifiedCount',status.modifiedCount)
             return status.modifiedCount
@@ -37,7 +37,6 @@ export const jwtService = {
         console.log(refreshToken)
         try {
             const { user } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-            console.log('fsdf',user)
 
             return user;
         } catch (e) {

@@ -43,7 +43,6 @@ authRouter.post('/refresh-token',
         console.log(req.cookies)
         try {
             const {refreshToken} = req.cookies;
-
             const tokens = await usersService.refresh(refreshToken);
             if (tokens){
                 res.cookie('refreshToken', tokens.refreshToken, {secure:true,httpOnly:true})
@@ -59,7 +58,7 @@ authRouter.post('/logout',
     async (req: Request, res: Response) => {
         try {
             const {refreshToken} = req.cookies;
-            await usersService.logout(refreshToken);
+            let deleteCount = await usersService.logout(refreshToken);
             res.clearCookie('refreshToken');
             res.sendStatus(204)
         } catch (e) {
