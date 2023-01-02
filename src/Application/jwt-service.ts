@@ -24,9 +24,9 @@ export const jwtService = {
             }
     },
     async saveToken(userId: string, refreshToken: string) {
-        const tokenData = await tokensCollection.findOne({user: userId})
+        const tokenData = await tokensCollection.findOne({userId: userId})
         if (tokenData) {
-            let status = await tokensCollection.updateOne({user: userId},{$set:{refreshToken,}})
+            let status = await tokensCollection.updateOne({userId: userId},{$set:{refreshToken}})
             return status.modifiedCount
 
         }
