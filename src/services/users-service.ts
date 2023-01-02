@@ -82,9 +82,9 @@ export const usersService = {
     },
     async refresh(refreshToken: string) {
         const userData = jwtService.validateRefreshToken(refreshToken);
-        const tokenFromDb = await tokensCollection.findOne({refreshToken});
+        const tokenFromDb = await tokensCollection.find({refreshToken}).toArray();
         console.log(userData,'fsdfdsf',tokenFromDb)
-        if (!userData || !tokenFromDb) {
+        if (!userData || !tokenFromDb.length) {
             throw new Error();
         }
         const user = await usersRepository.getUserById(userData);
