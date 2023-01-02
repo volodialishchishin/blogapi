@@ -42,7 +42,6 @@ authRouter.post('/refresh-token',
     async (req: Request, res: Response) => {
         try {
             const {refreshToken} = req.cookies;
-            console.log(req.cookies)
             const tokens = await usersService.refresh(refreshToken);
             if (tokens){
                 res.cookie('refreshToken', tokens.refreshToken, {secure:true,httpOnly:true})

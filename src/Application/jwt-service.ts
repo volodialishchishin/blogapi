@@ -35,9 +35,10 @@ export const jwtService = {
     validateRefreshToken(refreshToken: string) :string | null {
         console.log(refreshToken)
         try {
-            const { userId } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+            const { user } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+            console.log('fsdf',user)
 
-            return userId;
+            return user;
         } catch (e) {
             return null;
         }
