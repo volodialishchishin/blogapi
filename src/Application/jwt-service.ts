@@ -16,15 +16,12 @@ export const jwtService = {
     },
 
     getUserIdByToken(token: string) {
-
-            console.log(token)
-            const result: any = jwt.verify(token, process.env.SECRET || 'Ok')
-        console.log(result)
-            return result
-
-
-
-
+            try {
+                const result: any = jwt.verify(token, process.env.SECRET || 'Ok')
+                return result
+            }catch (e) {
+                return null
+            }
     },
     async saveToken(userId: string, refreshToken: string) {
         const tokenData = await tokensCollection.findOne({user: userId})
@@ -36,8 +33,10 @@ export const jwtService = {
         return await tokensCollection.insertOne({userId, refreshToken});
     },
     validateRefreshToken(refreshToken: string) :string | null {
+        console.log(refreshToken)
         try {
             const { userId } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+
             return userId;
         } catch (e) {
             return null;

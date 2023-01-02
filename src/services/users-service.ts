@@ -7,6 +7,7 @@ import add from 'date-fns/add'
 import {mailService} from "./mail-service";
 import {jwtService} from "../Application/jwt-service";
 import {tokensCollection} from "../DB/db";
+import jwt from "jsonwebtoken";
 
 export const usersService = {
     async createSuperUser(login: string, email: string, password: string): Promise<UserViewModel> {
@@ -82,6 +83,7 @@ export const usersService = {
     async refresh(refreshToken: string) {
         const userData = jwtService.validateRefreshToken(refreshToken);
         const tokenFromDb = await tokensCollection.findOne({refreshToken});
+        console.log(userData,tokenFromDb)
         if (!userData || !tokenFromDb) {
             throw new Error();
         }
@@ -91,6 +93,7 @@ export const usersService = {
         return {...tokens}
     },
     async logout(refreshToken: string) {
+        const result = jwt.verify(refreshToken, process.env.SECRET || 'Ok')
         const tokenData = await tokensCollection.deleteOne({refreshToken})
         return tokenData;
     }
