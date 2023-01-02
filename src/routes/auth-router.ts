@@ -31,7 +31,7 @@ authRouter.post('/login',
         if (user) {
             const token = jwtService.generateTokens(user)
             await jwtService.saveToken(user.id, token.refreshToken);
-            res.cookie('refreshToken', token.refreshToken, {secure:true,httpOnly:true})
+            res.cookie('refreshToken', token.refreshToken, {httpOnly:true})
             res.status(200).json({accessToken: token.accessToken})
         } else {
             res.sendStatus(401)
@@ -44,7 +44,7 @@ authRouter.post('/refresh-token',
             const {refreshToken} = req.cookies;
             const tokens = await usersService.refresh(refreshToken);
             if (tokens){
-                res.cookie('refreshToken', tokens.refreshToken, {secure:true,httpOnly:true})
+                res.cookie('refreshToken', tokens.refreshToken, {httpOnly:true})
                 return res.json({accessToken: tokens.accessToken});
             }
 
