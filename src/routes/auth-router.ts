@@ -42,7 +42,7 @@ authRouter.post('/refresh-token',
     async (req: Request, res: Response) => {
         console.log(req.cookies)
         try {
-            const {refreshToken} = req.cookies.secure;
+            const {refreshToken} = req.cookies;
 
             const tokens = await usersService.refresh(refreshToken);
             if (tokens){
