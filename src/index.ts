@@ -8,12 +8,14 @@ import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
 import cookieParser from "cookie-parser";
+import {securityRouter} from "./routes/security-router";
+import rateLimit from "express-rate-limit";
 export let blogs: Array<BlogViewModel> = []
 export let posts: Array<PostViewModel> = []
 const app = express()
 const port =  process.env.PORT || 8001
 
-
+app.set('trust proxy', true)
 app.use(express.json())
 app.use(cookieParser());
 app.use('/blogs',blogsRouter)
@@ -21,6 +23,7 @@ app.use('/posts',postsRouter)
 app.use('/users',usersRouter)
 app.use('/auth',authRouter)
 app.use('/comments',commentsRouter)
+app.use('/security',securityRouter)
 app.delete('/testing/all-data',async (req,res)=>{
     await blogsCollection.deleteMany({})
     await postsCollection.deleteMany({})

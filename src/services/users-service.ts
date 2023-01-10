@@ -80,16 +80,15 @@ export const usersService = {
             return null
         }
     },
-    async refresh(refreshToken: string) {
+    async refresh(refreshToken: string,device:string,ip:string) {
         const userData = jwtService.validateRefreshToken(refreshToken);
         const tokenFromDb = await tokensCollection.find({refreshToken:refreshToken}).toArray();
-        console.log(userData,'fsdfdsf',tokenFromDb)
         if (!userData || !tokenFromDb.length) {
             throw new Error();
         }
-        const user = await usersRepository.getUserById(userData);
-        const tokens = jwtService.generateTokens(user);
-        await jwtService.saveToken(user.id, tokens.refreshToken);
+        const user = await usersRepository.getUserById(userData.user);
+        const tokens = jwtService.generateTokens(user,userData.deviceId);
+        await jwtService.saveToken(user.id, tokens.refreshToken, ip, device);
         return {...tokens}
     },
     async logout(refreshToken: string) {
