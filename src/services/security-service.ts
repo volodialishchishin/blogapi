@@ -7,8 +7,8 @@ export const securityService = {
         return await securityRepository.getSessions(user)
     },
     async deleteSessions(refreshToken:string) {
-        const { user } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-        return await securityRepository.deleteSessions(user)
+        const { user, deviceId } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+        return await securityRepository.deleteSessions(user, deviceId)
     },
     async deleteSession(refreshToken:string, id:string) {
         const { user } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')

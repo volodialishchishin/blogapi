@@ -22,8 +22,11 @@ securityRouter.delete('/devices',
             res.sendStatus(401)
         }
         let deleteResult = await securityService.deleteSessions(refreshToken)
-        if (deleteResult.acknowledged){
+        if (deleteResult.deletedCount){
             res.sendStatus(204)
+        }
+        else {
+            res.sendStatus(404)
         }
 
     })

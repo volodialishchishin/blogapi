@@ -3,6 +3,7 @@ import {BlogViewModel} from "../models/Blog/BlogViewModel";
 import {UserViewModel} from "../models/User/UserViewModel";
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
 import {UserModel} from "../models/User/User";
+import {TokenModel} from "../models/Token/TokenModel";
 
 export const Helpers = {
     postsMapperToView(post:PostViewModel): PostViewModel{
@@ -39,6 +40,14 @@ export const Helpers = {
             userLogin: comment.userLogin,
             id: comment.id,
             createdAt: comment.createdAt,
+        }
+    },
+    deviceMapperToView (token:TokenModel) {
+        return {
+            deviceId:token.deviceId,
+            lastActiveDate:token.lastActiveDate,
+            ip:token.ip,
+            title:token.title
         }
     }
 }
