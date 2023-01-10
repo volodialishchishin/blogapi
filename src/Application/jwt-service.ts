@@ -27,7 +27,7 @@ export const jwtService = {
     async saveToken(userId: string, refreshToken: string, ip:string, device:string) {
         const { deviceId } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
         const tokenData = await tokensCollection.findOne({userId: userId})
-        if (tokenData && deviceId !== tokenData.deviceId) {
+        if (tokenData && deviceId === tokenData.deviceId) {
             let status = await tokensCollection.updateOne({userId: userId},{$set:{refreshToken,lastActiveDate:new Date().toISOString()}})
             console.log('status.modifiedCount',status.modifiedCount)
             return status.modifiedCount
