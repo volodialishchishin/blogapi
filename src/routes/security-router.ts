@@ -2,6 +2,7 @@ import {Request, Response, Router} from "express";
 import {authMiddlewareJwt} from "../middlwares/auth-middleware-jwt";
 import {securityService} from "../services/security-service";
 import {securityRepository} from "../DAL/security-repository";
+import jwt from "jsonwebtoken";
 
 export const securityRouter = Router()
 
@@ -39,6 +40,13 @@ securityRouter.delete('/devices/:id',
     async (req: Request, res: Response) => {
         try {
             const {refreshToken} = req.cookies;
+            try {
+                const { user } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+                await securityRepository.getSession(user,req.body.id)
+            }
+            catch (e) {
+                res.sendStatus(403)
+            }
             let deleteResult = await securityService.deleteSession(refreshToken, req.body.id)
             if (deleteResult.deletedCount) {
                 res.sendStatus(204)
@@ -46,12 +54,9 @@ securityRouter.delete('/devices/:id',
                 res.sendStatus(404)
             }
         } catch (e:any) {
-            if (e.message === 'User with this id can not delete this session'){
-                res.sendStatus(403)
-            }
-            else{
+
                 res.sendStatus(401)
-            }
+
         }
 
     })
