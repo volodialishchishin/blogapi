@@ -39,6 +39,12 @@ securityRouter.delete('/devices/:id',
     async (req: Request, res: Response) => {
         const {refreshToken} = req.cookies;
         try {
+            await <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+        }
+        catch (e) {
+            res.sendStatus(401)
+        }
+        try {
             const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
             await securityRepository.getSession(user, req.body.id)
         } catch (e) {
@@ -52,7 +58,7 @@ securityRouter.delete('/devices/:id',
                 res.sendStatus(404)
             }
         } catch (e) {
-            res.sendStatus(401)
+            res.sendStatus(404)
         }
 
     })
