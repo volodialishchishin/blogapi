@@ -15,11 +15,12 @@ export const securityRepository = {
         console.log('userId:',userId,'device:id', id)
         try {
             await this.getSession(userId,id)
+            return await tokensCollection.deleteOne({userId:userId,deviceId:id})
         }
         catch (e:any) {
             return e.message
         }
-        return await tokensCollection.deleteOne({userId,deviceId:id})
+
     },
     async getSession(userId:string,id:string): Promise<TokenModel> {
         let session  =  await tokensCollection.findOne({deviceId:id})
