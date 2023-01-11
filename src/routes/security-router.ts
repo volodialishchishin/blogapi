@@ -38,15 +38,17 @@ securityRouter.delete('/devices',
 
 securityRouter.delete('/devices/:id',
     async (req: Request, res: Response) => {
+        const {refreshToken} = req.cookies;
         try {
-            const {refreshToken} = req.cookies;
-            try {
-                const { user } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-                await securityRepository.getSession(user,req.body.id)
-            }
-            catch (e) {
-                res.sendStatus(403)
-            }
+            const { user } = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+            await securityRepository.getSession(user,req.body.id)
+        }
+        catch (e) {
+            res.sendStatus(403)
+        }
+        try {
+
+
             let deleteResult = await securityService.deleteSession(refreshToken, req.body.id)
             if (deleteResult.deletedCount) {
                 res.sendStatus(204)
