@@ -1,45 +1,57 @@
 import {Request, Response, Router} from "express";
 import {authMiddlewareJwt} from "../middlwares/auth-middleware-jwt";
 import {securityService} from "../services/security-service";
+import {securityRepository} from "../DAL/security-repository";
 
 export const securityRouter = Router()
 
 securityRouter.get('/devices',
     async (req: Request, res: Response) => {
-        const {refreshToken} = req.cookies;
-        if (!refreshToken){
+        try {
+            const {refreshToken} = req.cookies;
+            let sessions = await securityService.getSessions(refreshToken)
+            res.status(200).json(sessions)
+        } catch (e) {
             res.sendStatus(401)
         }
-        let sessions = await securityService.getSessions(refreshToken)
-        res.status(200).json(sessions)
+
     })
 
 securityRouter.delete('/devices',
-    authMiddlewareJwt,
     async (req: Request, res: Response) => {
         const {refreshToken} = req.cookies;
-        if (!refreshToken){
+        try {
+            let deleteResult = await securityService.deleteSessions(refreshToken)
+            if (deleteResult.deletedCount) {
+                res.sendStatus(204)
+            }
+            else{
+                res.sendStatus(401)
+            }
+
+        } catch (e) {
             res.sendStatus(401)
-        }
-        let deleteResult = await securityService.deleteSessions(refreshToken)
-        if (deleteResult.deletedCount){
-            res.sendStatus(204)
-        }
-        else {
-            res.sendStatus(404)
         }
 
     })
 
 securityRouter.delete('/devices/:id',
-    authMiddlewareJwt,
     async (req: Request, res: Response) => {
-        const {refreshToken} = req.cookies;
-        if (!refreshToken){
-            res.sendStatus(401)
+        try {
+            const {refreshToken} = req.cookies;
+            let deleteResult = await securityService.deleteSession(refreshToken, req.body.id)
+            if (deleteResult.deletedCount) {
+                res.sendStatus(204)
+            } else {
+                res.sendStatus(404)
+            }
+        } catch (e:any) {
+            if (e.message === 'User with this id can not delete this session'){
+                res.sendStatus(403)
+            }
+            else{
+                res.sendStatus(401)
+            }
         }
-        let deleteResult = await securityService.deleteSession(refreshToken, req.body.id)
-        if (deleteResult.acknowledged){
-            res.sendStatus(204)
-        }
+
     })

@@ -13,5 +13,12 @@ export const securityRepository = {
     },
     async deleteSession(userId:string,id:string): Promise<DeleteResult> {
         return await tokensCollection.deleteOne({userId,deviceId:id})
+    },
+    async getSession(userId:string,id:string): Promise<TokenModel> {
+        let session  =  await tokensCollection.findOne({deviceId:id})
+        if (session?.userId !== userId){
+            throw new Error()
+        }
+        return session
     }
 }
