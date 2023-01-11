@@ -12,6 +12,7 @@ export const securityRepository = {
         return await tokensCollection.deleteMany({userId, deviceId:{$ne:deviceId}})
     },
     async deleteSession(userId:string,id:string) {
+        console.log('userId:',userId,'device:id', id)
         try {
             await this.getSession(userId,id)
         }

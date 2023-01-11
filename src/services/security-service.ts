@@ -14,7 +14,7 @@ export const securityService = {
     async deleteSession(refreshToken: string, id: string): Promise<any> {
         const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
         try {
-            await securityRepository.getSession(user,id)
+            await securityRepository.deleteSession(user,id)
         }
         catch (e:any) {
             return e.message
