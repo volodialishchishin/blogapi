@@ -11,10 +11,14 @@ export const securityService = {
         const {user, deviceId} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
         return await securityRepository.deleteSessions(user, deviceId)
     },
-    async deleteSession(refreshToken: string, id: string): Promise<DeleteResult> {
-
+    async deleteSession(refreshToken: string, id: string): Promise<any> {
         const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-        return await securityRepository.deleteSession(user, id)
+        try {
+            await securityRepository.getSession(user,id)
+        }
+        catch (e:any) {
+            return e.message
+        }
 
     }
 }

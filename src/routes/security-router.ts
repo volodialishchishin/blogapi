@@ -39,26 +39,19 @@ securityRouter.delete('/devices/:id',
     async (req: Request, res: Response) => {
         const {refreshToken} = req.cookies;
         try {
-            await <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-        }
-        catch (e) {
-            res.sendStatus(401)
-        }
-        try {
-            const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-            await securityRepository.getSession(user, req.body.id)
-        } catch (e) {
-            return res.sendStatus(403)
-        }
-        try {
-            let deleteResult = await securityService.deleteSession(refreshToken, req.body.id)
-            if (deleteResult.deletedCount) {
-                res.sendStatus(204)
-            } else {
+            await securityService.deleteSession(refreshToken, req.body.id)
+            res.sendStatus(204)
+
+        } catch (e:any) {
+            if (e.message === '403'){
+                res.sendStatus(403)
+            }
+            else if (e.message === '404'){
                 res.sendStatus(404)
             }
-        } catch (e) {
-            res.sendStatus(404)
+            else {
+                res.sendStatus(401)
+            }
         }
 
     })

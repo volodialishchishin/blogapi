@@ -11,14 +11,29 @@ export const securityRepository = {
     async deleteSessions(userId:string, deviceId:string): Promise<DeleteResult> {
         return await tokensCollection.deleteMany({userId, deviceId:{$ne:deviceId}})
     },
-    async deleteSession(userId:string,id:string): Promise<DeleteResult> {
+    async deleteSession(userId:string,id:string) {
+        try {
+            await this.getSession(userId,id)
+        }
+        catch (e:any) {
+            return e.message
+        }
         return await tokensCollection.deleteOne({userId,deviceId:id})
     },
     async getSession(userId:string,id:string): Promise<TokenModel> {
         let session  =  await tokensCollection.findOne({deviceId:id})
-        if (session?.userId !== userId){
-            throw new Error()
+        if (!session){
+            throw new Error('404')
         }
-        return session
+        else{
+            if (session?.userId !== userId){
+                throw new Error('403')
+            }
+            else{
+                return session
+            }
+        }
+
+
     }
 }
