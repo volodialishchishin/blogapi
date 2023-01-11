@@ -17,7 +17,7 @@ export const securityService = {
             await securityRepository.deleteSession(user,id)
         }
         catch (e:any) {
-            return e.message
+            throw new Error(e.message)
         }
 
     }

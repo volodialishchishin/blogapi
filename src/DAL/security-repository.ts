@@ -18,7 +18,7 @@ export const securityRepository = {
             return await tokensCollection.deleteOne({userId:userId,deviceId:id})
         }
         catch (e:any) {
-            return e.message
+            throw new Error(e.message)
         }
 
     },
