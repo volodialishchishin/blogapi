@@ -212,11 +212,16 @@ authRouter.post('/password-recovery',
     inputValidationMiddlware,
     async (req: RequestWithBody<PasswordRecoveryInputModel>,res:Response) => {
         const {email} = req.body
-        const user = await usersRepository.getUserByLoginOrEmail('', email)
-        let code = v4()
-        await mailService.sendRecoveryPasswordCode(user, false, code)
-        await recoveryPasswordModelCollection.insertOne({userId:user.id,code})
-        res.sendStatus(204)
+        try {
+            const user = await usersRepository.getUserByLoginOrEmail('', email)
+            let code = v4()
+            await mailService.sendRecoveryPasswordCode(user, false, code)
+            await recoveryPasswordModelCollection.insertOne({userId:user.id,code})
+            res.sendStatus(204)
+        }
+        catch (e){
+            res.sendStatus(204)
+        }
 
     }
 )
