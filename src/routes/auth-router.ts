@@ -209,6 +209,7 @@ authRouter.get('/me',
 authRouter.post('/password-recovery',
     recoveryPasswordLimiter,
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    inputValidationMiddlware,
     async (req: RequestWithBody<PasswordRecoveryInputModel>,res:Response) => {
         const {email} = req.body
         const user = await usersRepository.getUserByLoginOrEmail('', email)
@@ -239,7 +240,9 @@ authRouter.post('/new-password',
             }
         }
         else{
-            res.sendStatus(400)
+            res.status(400).json(
+                { errorsMessages: [{ message: 'Incorrect Recovery', field: "recoveryCode" }] }
+            )
         }
     }
 )

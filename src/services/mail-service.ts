@@ -19,7 +19,7 @@ export const mailService = {
     },
     async sendRecoveryPasswordCode(user: UserModel, resend:boolean = false,newCode:string='') {
         console.log(user)
-        let url = `https://somesite.com/confirm-email?recoveryCode=${resend?newCode:user.emailConfirmation.confirmationCode}`
+        let url = `https://somesite.com/confirm-email?recoveryCode=${newCode}`
 
         console.log(url)
         let info = await transporter.sendMail({
