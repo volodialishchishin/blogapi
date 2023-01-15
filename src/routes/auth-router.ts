@@ -213,7 +213,7 @@ authRouter.post('/password-recovery',
         const {email} = req.body
         const user = await usersRepository.getUserByLoginOrEmail('', email)
         let code = v4()
-        await mailService.sendMailConfirmation(user, false, code)
+        await mailService.sendRecoveryPasswordCode(user, false, code)
         await recoveryPasswordModelCollection.insertOne({userId:user.id,code})
         res.sendStatus(204)
 
