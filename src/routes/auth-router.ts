@@ -9,10 +9,12 @@ import {usersRepository} from "../DAL/users-repository";
 import {RegisterModelInput} from "../models/Registration/RegisterModelInput";
 import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
 import {mailService} from "../services/mail-service";
-import {usersCollection} from "../DB/db";
+import {recoveryPasswordModelCollection, usersCollection} from "../DB/db";
 import {v4} from 'uuid';
 import rateLimit from 'express-rate-limit'
-
+import {NewRecoveryInputModel} from "../models/PasswordRecovery/NewRecoveryInputModel";
+import {PasswordRecoveryInputModel} from "../models/PasswordRecovery/PasswordRecoveryInputModel";
+import bcrypt from "bcrypt";
 
 
 const loginLimiter = rateLimit({
@@ -49,6 +51,22 @@ const registrationEmailResendingLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 })
+const recoveryPasswordLimiter = rateLimit({
+    windowMs: 10000,
+    max: 5,
+    message:
+        'Too many accounts created from this IP, please try again after an hour',
+    standardHeaders: true,
+    legacyHeaders: false,
+})
+const newPasswordLimiter = rateLimit({
+    windowMs: 10000,
+    max: 5,
+    message:
+        'Too many accounts created from this IP, please try again after an hour',
+    standardHeaders: true,
+    legacyHeaders: false,
+})
 
 const registrationEmailResending = rateLimit({
     windowMs: 10000,
@@ -73,8 +91,8 @@ authRouter.post('/login',
         if (user && req.headers["user-agent"]) {
             let deviceId = v4()
             const token = jwtService.generateTokens(user, deviceId)
-            await jwtService.saveToken(user.id, token.refreshToken,req.ip,req.headers["user-agent"]);
-            res.cookie('refreshToken', token.refreshToken, {secure:true,httpOnly:true})
+            await jwtService.saveToken(user.id, token.refreshToken, req.ip, req.headers["user-agent"]);
+            res.cookie('refreshToken', token.refreshToken, {secure: true, httpOnly: true})
             res.status(200).json({accessToken: token.accessToken})
         } else {
             res.sendStatus(401)
@@ -86,11 +104,11 @@ authRouter.post('/refresh-token',
         try {
             const {refreshToken} = req.cookies;
             let tokens;
-            if (req.headers["user-agent"]){
-               tokens = await usersService.refresh(refreshToken, req.headers["user-agent"],req.ip);
+            if (req.headers["user-agent"]) {
+                tokens = await usersService.refresh(refreshToken, req.headers["user-agent"], req.ip);
             }
-            if (tokens){
-                res.cookie('refreshToken', tokens.refreshToken, {secure:true,httpOnly:true})
+            if (tokens) {
+                res.cookie('refreshToken', tokens.refreshToken, {secure: true, httpOnly: true})
                 return res.json({accessToken: tokens.accessToken});
             }
 
@@ -140,7 +158,7 @@ authRouter.post('/registration-confirmation',
     registrationConfirmationLimiter,
     body('code').isString().trim().isLength({min: 1}).custom(async (value, {req}) => {
         let user = await usersRepository.getUserByCode(req.body.code)
-        if (!user || user.emailConfirmation.isConfirmed || !user.emailConfirmation?.confirmationCode  ) {
+        if (!user || user.emailConfirmation.isConfirmed || !user.emailConfirmation?.confirmationCode) {
             throw Error('User Already exists')
         }
         return true;
@@ -157,22 +175,21 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     registrationEmailResendingLimiter,
     body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value, {req}) => {
-        let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
-        if  (user?.emailConfirmation?.isConfirmed || !user) {
+        let user = await usersRepository.getUserByLoginOrEmail('', req.body.email)
+        if (user?.emailConfirmation?.isConfirmed || !user) {
             throw Error('User Already exists')
         }
         return true;
     }),
     inputValidationMiddlware,
     async (req: RequestWithBody<{ email: string }>, res: Response) => {
-        let user = await usersRepository.getUserByLoginOrEmail('',req.body.email)
-        if (user){
+        let user = await usersRepository.getUserByLoginOrEmail('', req.body.email)
+        if (user) {
             let newCode = v4()
-            await usersCollection.updateOne({id:user.id},{$set:{"emailConfirmation.confirmationCode":newCode}})
-            await mailService.sendMailConfirmation(user,true,newCode)
+            await usersCollection.updateOne({id: user.id}, {$set: {"emailConfirmation.confirmationCode": newCode}})
+            await mailService.sendMailConfirmation(user, true, newCode)
             res.sendStatus(204)
-        }
-        else{
+        } else {
             res.sendStatus(400)
         }
     }
@@ -182,9 +199,47 @@ authRouter.get('/me',
     authMiddlewareJwt,
     async (req: Request, res: Response) => {
         return res.json({
-            email:req.context.user.accountData.email,
-            login:req.context.user.accountData.login,
-            userId :req.context.user.id
+            email: req.context.user.accountData.email,
+            login: req.context.user.accountData.login,
+            userId: req.context.user.id
         })
+    }
+)
+
+authRouter.post('/password-recovery',
+    recoveryPasswordLimiter,
+    body('email').isString().trim().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    async (req: RequestWithBody<PasswordRecoveryInputModel>,res:Response) => {
+        const {email} = req.body
+        const user = await usersRepository.getUserByLoginOrEmail('', email)
+        let code = v4()
+        await mailService.sendMailConfirmation(user, false, code)
+        await recoveryPasswordModelCollection.insertOne({userId:user.id,code})
+        res.sendStatus(204)
+
+    }
+)
+authRouter.post('/new-password',
+    newPasswordLimiter,
+    body('newPassword').isString().trim().isLength({min: 6, max: 20}),
+    body('recoveryCode').isString(),
+    inputValidationMiddlware,
+    async (req: RequestWithBody<NewRecoveryInputModel>,res:Response) => {
+        const {newPassword,recoveryCode} = req.body
+        const code =  await recoveryPasswordModelCollection.findOne({code:recoveryCode})
+        if (code){
+            const passwordSalt = await bcrypt.genSalt(10)
+            const passwordHash = await usersService.generateHash(newPassword, passwordSalt)
+            let updateStatus = await usersCollection.updateOne({id:code.userId},{$set:{'accountData.passwordSalt': passwordSalt,'accountData.password':passwordHash}})
+            if (updateStatus.modifiedCount){
+                res.sendStatus(204)
+            }
+            else{
+                res.sendStatus(400)
+            }
+        }
+        else{
+            res.sendStatus(400)
+        }
     }
 )

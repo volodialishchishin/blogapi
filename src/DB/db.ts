@@ -6,6 +6,7 @@ import {UserModel} from "../models/User/User";
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
 import {CommentModel} from "../models/Comment/CommentModel";
 import {TokenModel} from "../models/Token/TokenModel";
+import {RecoveryPasswordModel} from "../models/PasswordRecovery/RecoveryPasswordModel";
 dotenv.config()
 if (!process.env.MONGO_URL){
     throw new Error('Url does not exist')
@@ -19,6 +20,7 @@ export const postsCollection = client.db().collection<PostViewModel>('posts')
 export const usersCollection = client.db().collection<UserModel>('users')
 export const commentsCollection = client.db().collection<CommentModel>('comments')
 export const tokensCollection = client.db().collection<TokenModel>('tokens')
+export const recoveryPasswordModelCollection = client.db().collection<RecoveryPasswordModel>('recoryCodes')
 
 export const runDb = async ()=>{
     try {
