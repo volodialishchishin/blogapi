@@ -68,11 +68,12 @@ commentsRouter.delete('/:commentId',
     })
 
 commentsRouter.put('/:commentId/like-status',
-    body('likeStatus').isString().isIn(['None', 'LikeInfo', 'Dislike']),
+    body('likeStatus').isString(),
     authMiddlewareJwt,
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{commentId:string},{ likeStatus: LikeInfoViewModelValues }>, res: Response) => {
         const { likeStatus } = req.body
+        console.log(req.context)
         let result = await commentsRepository.updateLikeStatus(likeStatus, req?.context?.user?.id, req.params.commentId)
         if (result){
             res.sendStatus(204)
