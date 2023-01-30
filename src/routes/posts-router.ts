@@ -23,6 +23,7 @@ import {CommentViewModel, CommentViewModelWithQuery} from "../models/Comment/Com
 import {postsRepository} from "../DAL/posts.repository";
 import {commentsRepository} from "../DAL/comments-repository";
 import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
+import jwt from "jsonwebtoken";
 
 
 export const postsRouter = Router()
@@ -123,7 +124,10 @@ postsRouter.post('/:id/comments',
         }
         else{
             let result = await commentsService.createComment(req.params.id, content, user!.id, user!.accountData.login)
-            let comment = await  commentsRepository.getCommentById(result, req.context.user.id);
+            const {refreshToken} = req.cookies
+            const {userId} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+
+            let comment = await  commentsRepository.getCommentById(result, userId);
             comment!.likesInfo ={
                 myStatus: LikeInfoViewModelValues.none,
                 dislikesCount:0,
@@ -144,7 +148,10 @@ postsRouter.get('/:id/comments',
         const sortBy = req.query.sortBy || 'createdAt'
         const pageSize = req.query.pageSize || 10
         const sortDirection = req.query.sortDirection || 'desc'
-        let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,req.context.user.id)
+        const {refreshToken} = req.cookies
+        const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+
+        let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,user)
         result.items.length ? res.status(200).json(result):res.sendStatus(404)
     })
 
