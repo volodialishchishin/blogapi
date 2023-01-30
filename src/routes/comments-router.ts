@@ -25,10 +25,10 @@ export const commentsRouter = Router()
 commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     try {
         const authToken = req.headers.authorization?.split(' ')[1] || ''
-        console.log(authToken)
+        console.log('HERE',authToken)
         const user = jwtService.getUserIdByToken(authToken)
 
-        let result = await commentsService.getComment(req.params.id, user?.user)
+        let result = await commentsService.getComment(req.params.id, user)
         result ? res.status(200).json(result) : res.sendStatus(404)
     }
     catch (e) {
