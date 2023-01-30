@@ -24,6 +24,7 @@ import {postsRepository} from "../DAL/posts.repository";
 import {commentsRepository} from "../DAL/comments-repository";
 import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
 import jwt from "jsonwebtoken";
+import {jwtService} from "../Application/jwt-service";
 
 
 export const postsRouter = Router()
@@ -149,11 +150,14 @@ postsRouter.get('/:id/comments',
         const {refreshToken} = req.cookies
         console.log('13123123',refreshToken)
         try {
-            const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-            console.log(user)
-            let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,user)
+            const authToken = req.headers.authorization?.split(' ')[1] || ''
+            const user = jwtService.getUserIdByToken(authToken)
+            let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,user.user)
             result.items.length ? res.status(200).json(result):res.sendStatus(404)
+        }catch (e) {
+            console.log(e)
         }
 
-    })
+    }
+    )
 

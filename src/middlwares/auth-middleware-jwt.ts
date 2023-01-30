@@ -12,7 +12,6 @@ export const authMiddlewareJwt = (async (req: Request, res: Response, next: Next
     }
 
     const user = jwtService.getUserIdByToken(authToken)
-    console.log(user)
     if (user) {
         req.context = {user:await usersRepository.getUserById(user.user)}
         if(req.context.user){

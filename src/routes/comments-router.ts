@@ -18,14 +18,16 @@ import {CommentViewModel} from "../models/Comment/CommentViewModel";
 import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
 import {commentsRepository} from "../DAL/comments-repository";
 import jwt from "jsonwebtoken";
+import {jwtService} from "../Application/jwt-service";
 
 export const commentsRouter = Router()
 
 commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    const {refreshToken} = req.cookies
     try {
-        const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-        let result = await commentsService.getComment(req.params.id, user)
+        const authToken = req.headers.authorization?.split(' ')[1] || ''
+        const user = jwtService.getUserIdByToken(authToken)
+
+        let result = await commentsService.getComment(req.params.id, user.user)
         result ? res.status(200).json(result) : res.sendStatus(404)
     }
     catch (e) {
@@ -85,7 +87,7 @@ commentsRouter.put('/:commentId/like-status',
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{commentId:string},{ likeStatus: LikeInfoViewModelValues }>, res: Response) => {
         const { likeStatus } = req.body
-        console.log(req.context)
+
         let result = await commentsRepository.updateLikeStatus(likeStatus, req?.context?.user?.id, req.params.commentId)
         if (result){
             res.sendStatus(204)
