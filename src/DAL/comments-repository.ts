@@ -65,8 +65,7 @@ export const commentsRepository = {
         if (like && like.status !== likeStatus){
             const like = await likesCollection.findOne({commentId,userId})
             if (like){
-                like.status = likeStatus
-                like.dateAdded = new Date();
+                await likesCollection.updateOne({commentId,userId},{$set:{status:likeStatus}})
             }
         }
         return true
