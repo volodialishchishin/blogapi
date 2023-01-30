@@ -2,9 +2,11 @@ import {LikeInfoViewModel} from "../LikeInfo/LikeInfoViewModel";
 
 export type CommentViewModel = {
     id:string
+    commentatorInfo:{
+        userId:string
+        userLogin:string
+    },
     content:string
-    userId:string
-    userLogin:string
     createdAt:string,
     likesInfo: LikeInfoViewModel
 }

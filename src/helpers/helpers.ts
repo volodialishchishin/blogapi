@@ -41,8 +41,10 @@ export const Helpers = {
         let disLikesCount = await likesCollection.find({id:comment.id,status: LikeInfoViewModelValues.dislike }).toArray()
         return {
             content: comment.content,
-            userId: comment.userId,
-            userLogin: comment.userLogin,
+            commentatorInfo:{
+                userId: comment.userId,
+                userLogin: comment.userLogin,
+            },
             id: comment.id,
             createdAt: comment.createdAt,
             likesInfo:{

@@ -43,6 +43,10 @@ export const commentsRepository = {
         return result.deletedCount === 1
     },
     async updateLikeStatus(likeStatus: LikeInfoViewModelValues, userId: string, commentId: string) {
+        let comment = this.getCommentById(commentId,userId)
+        if (!comment){
+            return false
+        }
         const like = await likesCollection.findOne({commentId,userId})
         if (!like){
             const status:LikeInfoModel = {

@@ -8,7 +8,7 @@ dotenv.config()
 
 export const jwtService = {
     generateTokens(user: UserModel,deviceId:string) {
-        let accessToken =  jwt.sign({user: user.id,email:user.accountData.email,login:user.accountData.login}, process.env.SECRET || 'Ok', {expiresIn: '10s'})
+        let accessToken =  jwt.sign({user: user.id,email:user.accountData.email,login:user.accountData.login}, process.env.SECRET || 'Ok', {expiresIn: '10m'})
         let refreshToken =  jwt.sign({user: user.id, deviceId:deviceId}, process.env.SECRET || 'Ok', {expiresIn: '20s'})
         return {
             accessToken,

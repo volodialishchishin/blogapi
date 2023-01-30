@@ -35,7 +35,7 @@ commentsRouter.put('/:commentId',
             res.sendStatus(404)
             return
         }
-        if (comment.userId !== req.context.user.id) {
+        if (comment.commentatorInfo.userId !== req.context.user.id) {
             res.sendStatus(403)
             return
         }
@@ -55,7 +55,7 @@ commentsRouter.delete('/:commentId',
             res.sendStatus(404)
             return
         }
-        if (comment.userId !== req.context.user.id) {
+        if (comment.commentatorInfo.userId !== req.context.user.id) {
             res.sendStatus(403)
             return
         }
@@ -68,11 +68,16 @@ commentsRouter.delete('/:commentId',
     })
 
 commentsRouter.put('/:commentId/like-status',
-    body('content').isString().isIn(['None', 'LikeInfo', 'Dislike']),
+    body('likeStatus').isString().isIn(['None', 'LikeInfo', 'Dislike']),
     authMiddlewareJwt,
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{commentId:string},{ likeStatus: LikeInfoViewModelValues }>, res: Response) => {
         const { likeStatus } = req.body
+        let result = await commentsRepository.updateLikeStatus(likeStatus, req?.context?.user?.id, req.params.commentId)
+        if (result){
+            res.sendStatus(204)
+        }else{
+            res.sendStatus(404)
+        }
 
-        await commentsRepository.updateLikeStatus(likeStatus, req.context.user.id, req.params.commentId)
     })
