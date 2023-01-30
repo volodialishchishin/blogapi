@@ -55,11 +55,8 @@ commentsRouter.delete('/:commentId',
     authMiddlewareJwt,
     inputValidationMiddlware,
     async (req: RequestWithParams<{ commentId: string }>, res: Response) => {
-        const {refreshToken} = req.cookies
-        console.log(refreshToken)
-        const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
 
-        let comment = await commentsService.getComment(req.params.commentId, user)
+        let comment = await commentsService.getComment(req.params.commentId, req.context.user.id)
         if (!comment) {
             res.sendStatus(404)
             return
