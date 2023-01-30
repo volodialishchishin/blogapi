@@ -1,4 +1,4 @@
-import {commentsCollection, likesCollection, tokensCollection} from "../DB/db";
+import {commentsCollection, likesCollection} from "../DB/db";
 import {Helpers} from "../helpers/helpers";
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
 import {CommentModel} from "../models/Comment/CommentModel";
@@ -61,8 +61,13 @@ export const commentsRepository = {
             }
             await likesCollection.insertOne(status)
         }
-
-        await likesCollection.updateOne({commentId,userId},{$set:{status:likeStatus}})
+        else{
+            if (likeStatus === LikeInfoViewModelValues.none){
+                await likesCollection.deleteOne({userId:like.userId,commentId:like.commentId})
+            }else{
+                await likesCollection.updateOne({commentId,userId},{$set:{status:likeStatus}})
+            }
+        }
         return true
     }
 }
