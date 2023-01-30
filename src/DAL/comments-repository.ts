@@ -60,14 +60,9 @@ export const commentsRepository = {
                 dateAdded: new Date()
             }
             await likesCollection.insertOne(status)
+        }
 
-        }
-        if (like && like.status !== likeStatus){
-            const like = await likesCollection.findOne({commentId,userId})
-            if (like){
-                await likesCollection.updateOne({commentId,userId},{$set:{status:likeStatus}})
-            }
-        }
+        await likesCollection.updateOne({commentId,userId},{$set:{status:likeStatus}})
         return true
     }
 }
