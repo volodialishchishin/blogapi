@@ -4,20 +4,12 @@ import {
     RequestWithQuery, UserQueryParams,
 } from "../types/types";
 import {body, query} from "express-validator";
-import {ErrorModel} from "../models/Error/Error";
-import {authMiddleware} from "../middlwares/auth-middleware";
-import {UserInputModel} from "../models/User/UserInputModel";
-import {UserViewModel, userViewModelWithQuery} from "../models/User/UserViewModel";
-import {usersService} from "../services/users-service";
-import {queryRepository} from "../DAL/query-repository";
 import {inputValidationMiddlware} from "../middlwares/input-validation-middlware";
 import {commentsService} from "../services/comments-service";
 import {CommentInputModel} from "../models/Comment/CommentInputModel";
 import {authMiddlewareJwt} from "../middlwares/auth-middleware-jwt";
-import {CommentViewModel} from "../models/Comment/CommentViewModel";
 import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
 import {commentsRepository} from "../DAL/comments-repository";
-import jwt from "jsonwebtoken";
 import {jwtService} from "../Application/jwt-service";
 
 export const commentsRouter = Router()
@@ -25,11 +17,9 @@ export const commentsRouter = Router()
 commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     try {
         const authToken = req.headers.authorization?.split(' ')[1] || ''
-        const {refreshToken} = req.cookies
-        console.log('HERE',req.headers.authorization,refreshToken)
         const user = jwtService.getUserIdByToken(authToken)
 
-        let result = await commentsService.getComment(req.params.id, user)
+        let result = await commentsRepository.getCommentById(req.params.id, user)
         result ? res.status(200).json(result) : res.sendStatus(404)
     }
     catch (e) {

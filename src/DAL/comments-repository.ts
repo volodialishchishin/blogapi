@@ -21,20 +21,23 @@ export const commentsRepository = {
         );
         return result.matchedCount === 1
     },
-    async getCommentById(id: string,userId:String): Promise<CommentViewModel | undefined> {
-        try {
-            const comment = await commentsCollection.findOne({userId,id})
+    async getCommentById(id: string,userId:string): Promise<CommentViewModel | undefined> {
+            const comment = await commentsCollection.findOne({id})
             if (comment){
                 let commentToView  = await Helpers.commentsMapperToView(comment);
+
+                if (!userId){
+                    return commentToView
+                }
                 let likeStatus = await likesCollection.findOne({userId,commentId:id})
-                commentToView.likesInfo.myStatus = likeStatus?.status || LikeInfoViewModelValues.none
+                if (likeStatus){
+                    commentToView.likesInfo.myStatus = likeStatus?.status || LikeInfoViewModelValues.none
+                }
                 return commentToView
             }
-
-        }
-        catch (e) {
-            console.log(e)
-        }
+            else{
+                return undefined
+            }
     },
     async deleteComment(id:string):Promise<boolean>{
         let result = await commentsCollection.deleteOne(
