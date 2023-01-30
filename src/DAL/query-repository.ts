@@ -81,8 +81,8 @@ export const queryRepository = {
             })
 
             if (myLikeForComment){
-
                 mappedComment.likesInfo.myStatus = myLikeForComment.status
+                return mappedComment
             }
             return mappedComment
         }))
