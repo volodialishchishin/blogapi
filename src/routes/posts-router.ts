@@ -124,10 +124,8 @@ postsRouter.post('/:id/comments',
         }
         else{
             let result = await commentsService.createComment(req.params.id, content, user!.id, user!.accountData.login)
-            const {refreshToken} = req.cookies
-            const {userId} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
 
-            let comment = await  commentsRepository.getCommentById(result, userId);
+            let comment = await  commentsRepository.getCommentById(result, user!.id);
             comment!.likesInfo ={
                 myStatus: LikeInfoViewModelValues.none,
                 dislikesCount:0,
