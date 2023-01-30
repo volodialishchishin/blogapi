@@ -23,7 +23,6 @@ import {CommentViewModel, CommentViewModelWithQuery} from "../models/Comment/Com
 import {postsRepository} from "../DAL/posts.repository";
 import {commentsRepository} from "../DAL/comments-repository";
 import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
-import jwt from "jsonwebtoken";
 import {jwtService} from "../Application/jwt-service";
 
 

@@ -27,7 +27,7 @@ commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: R
         const authToken = req.headers.authorization?.split(' ')[1] || ''
         console.log(authToken)
         const user = jwtService.getUserIdByToken(authToken)
-        console.log(user)
+
         let result = await commentsService.getComment(req.params.id, user?.user)
         result ? res.status(200).json(result) : res.sendStatus(404)
     }
