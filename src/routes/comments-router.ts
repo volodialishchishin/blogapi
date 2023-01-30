@@ -23,10 +23,16 @@ export const commentsRouter = Router()
 
 commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const {refreshToken} = req.cookies
-    const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+    try {
+        const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+        let result = await commentsService.getComment(req.params.id, user)
+        result ? res.status(200).json(result) : res.sendStatus(404)
+    }
+    catch (e) {
+        console.log('e',e)
+    }
 
-    let result = await commentsService.getComment(req.params.id, user)
-    result ? res.status(200).json(result) : res.sendStatus(404)
+
 })
 
 commentsRouter.put('/:commentId',

@@ -148,9 +148,12 @@ postsRouter.get('/:id/comments',
         const sortDirection = req.query.sortDirection || 'desc'
         const {refreshToken} = req.cookies
         console.log('13123123',refreshToken)
-        const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
-        console.log(user)
-        let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,user)
-        result.items.length ? res.status(200).json(result):res.sendStatus(404)
+        try {
+            const {user} = <jwt.UserIDJwtPayload>jwt.verify(refreshToken, process.env.SECRET || 'Ok')
+            console.log(user)
+            let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,user)
+            result.items.length ? res.status(200).json(result):res.sendStatus(404)
+        }
+
     })
 
