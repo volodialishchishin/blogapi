@@ -1,4 +1,4 @@
-import {commentsCollection, likesCollection} from "../DB/db";
+import {commentsCollection, likesCollection, tokensCollection} from "../DB/db";
 import {Helpers} from "../helpers/helpers";
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
 import {CommentModel} from "../models/Comment/CommentModel";
@@ -46,7 +46,7 @@ export const commentsRepository = {
         return result.deletedCount === 1
     },
     async updateLikeStatus(likeStatus: LikeInfoViewModelValues, userId: string, commentId: string) {
-        let comment = this.getCommentById(commentId,userId)
+        let comment = await commentsCollection.findOne({id:commentId})
         if (!comment){
             return false
         }

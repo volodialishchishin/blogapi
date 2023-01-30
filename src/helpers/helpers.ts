@@ -37,8 +37,8 @@ export const Helpers = {
         }
     },
     async commentsMapperToView(comment:CommentModel): Promise<CommentViewModel>{
-        let likesCount = await likesCollection.find({id:comment.id, status: LikeInfoViewModelValues.like}).toArray()
-        let disLikesCount = await likesCollection.find({id:comment.id,status: LikeInfoViewModelValues.dislike }).toArray()
+        let likesCount = await likesCollection.find({commentId:comment.id, status: LikeInfoViewModelValues.like}).toArray()
+        let disLikesCount = await likesCollection.find({commentId:comment.id,status: LikeInfoViewModelValues.dislike }).toArray()
         return {
             content: comment.content,
             commentatorInfo:{
