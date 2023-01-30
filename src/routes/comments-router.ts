@@ -20,7 +20,7 @@ commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: R
         const user = jwtService.getUserIdByToken(authToken)
         console.log('fdsfsd')
         console.log(req.params.id,user)
-        let result = await commentsRepository.getCommentById(req.params.id, user.user)
+        let result = await commentsRepository.getCommentById(req.params.id, user?.user)
         result ? res.status(200).json(result) : res.sendStatus(404)
     }
     catch (e) {
