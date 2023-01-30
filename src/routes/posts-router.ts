@@ -152,7 +152,9 @@ postsRouter.get('/:id/comments',
         try {
             const authToken = req.headers.authorization?.split(' ')[1] || ''
             const user = jwtService.getUserIdByToken(authToken)
-            let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,user.user)
+            console.log(user)
+            console.log(authToken)
+            let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,user?.user)
             result.items.length ? res.status(200).json(result):res.sendStatus(404)
         }catch (e) {
             console.log(e)
