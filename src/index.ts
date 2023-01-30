@@ -9,7 +9,6 @@ import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
 import cookieParser from "cookie-parser";
 import {securityRouter} from "./routes/security-router";
-import rateLimit from "express-rate-limit";
 export let blogs: Array<BlogViewModel> = []
 export let posts: Array<PostViewModel> = []
 const app = express()
