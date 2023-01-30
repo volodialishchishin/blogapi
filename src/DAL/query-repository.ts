@@ -68,17 +68,20 @@ export const queryRepository = {
         let matchedComments = await commentsCollection.find({postId: postId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allComments = await commentsCollection.find({postId: postId}).toArray()
         const pagesCount = Math.ceil(allComments.length / pageSize)
-        console.log(userId)
         const matchedCommentsWithLikes = await Promise.all(matchedComments.map(async comment=>{
             const mappedComment = await Helpers.commentsMapperToView(comment)
-            if (userId){
+            console.log(userId,comment.id)
+            if (!userId){
                 return mappedComment
             }
+
             let myLikeForComment = await likesCollection.findOne({
                 userId,
                 commentId:comment.id
             })
+
             if (myLikeForComment){
+
                 mappedComment.likesInfo.myStatus = myLikeForComment.status
             }
             return mappedComment

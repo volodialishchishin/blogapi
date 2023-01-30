@@ -18,8 +18,9 @@ commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: R
     try {
         const authToken = req.headers.authorization?.split(' ')[1] || ''
         const user = jwtService.getUserIdByToken(authToken)
-
-        let result = await commentsRepository.getCommentById(req.params.id, user)
+        console.log('fdsfsd')
+        console.log(req.params.id,user)
+        let result = await commentsRepository.getCommentById(req.params.id, user.user)
         result ? res.status(200).json(result) : res.sendStatus(404)
     }
     catch (e) {
@@ -32,7 +33,7 @@ commentsRouter.put('/:commentId',
     body('content').isString().trim().isLength({min: 20, max: 300}),
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{ commentId: string }, CommentInputModel>, res: Response) => {
-
+        console.log('fdsf')
         let comment = await commentsService.getComment(req.params.commentId, req.context.user.id)
         if (!comment) {
             res.sendStatus(404)

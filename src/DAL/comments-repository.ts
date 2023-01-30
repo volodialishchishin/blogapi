@@ -30,6 +30,7 @@ export const commentsRepository = {
                     return commentToView
                 }
                 let likeStatus = await likesCollection.findOne({userId,commentId:id})
+                console.log(userId,id)
                 if (likeStatus){
                     commentToView.likesInfo.myStatus = likeStatus?.status || LikeInfoViewModelValues.none
                 }
