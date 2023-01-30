@@ -21,8 +21,8 @@ export const postsCollection = client.db().collection<PostViewModel>('posts')
 export const usersCollection = client.db().collection<UserModel>('users')
 export const commentsCollection = client.db().collection<CommentModel>('comments')
 export const tokensCollection = client.db().collection<TokenModel>('tokens')
-export const recoveryPasswordModelCollection = client.db().collection<RecoveryPasswordModel>('recoryCodes')
-export const likesCollection = client.db().collection<LikeInfoModel>('recoryCodes')
+export const recoveryPasswordModelCollection = client.db().collection<RecoveryPasswordModel>('recoveryCodes')
+export const likesCollection = client.db().collection<LikeInfoModel>('likes')
 
 export const runDb = async ()=>{
     try {

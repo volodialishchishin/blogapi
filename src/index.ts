@@ -3,7 +3,15 @@ import {blogsRouter} from "./routes/blogs-router";
 import {postsRouter} from "./routes/posts-router";
 import {BlogViewModel} from "./models/Blog/BlogViewModel";
 import {PostViewModel} from "./models/Post/PostViewModel";
-import {blogsCollection, commentsCollection, postsCollection, runDb, tokensCollection, usersCollection} from "./DB/db";
+import {
+    blogsCollection,
+    commentsCollection,
+    likesCollection,
+    postsCollection, recoveryPasswordModelCollection,
+    runDb,
+    tokensCollection,
+    usersCollection
+} from "./DB/db";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
@@ -28,7 +36,9 @@ app.delete('/testing/all-data',async (req,res)=>{
     await postsCollection.deleteMany({})
     await usersCollection.deleteMany({})
     await commentsCollection.deleteMany({})
+    await likesCollection.deleteMany({})
     await tokensCollection.deleteMany({})
+    await recoveryPasswordModelCollection.deleteMany({})
     res.sendStatus(204)
 })
 app.listen(port,async ()=>{

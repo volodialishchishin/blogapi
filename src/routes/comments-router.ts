@@ -34,8 +34,6 @@ commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: R
     catch (e) {
         console.log('e',e)
     }
-
-
 })
 
 commentsRouter.put('/:commentId',

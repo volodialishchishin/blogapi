@@ -18,6 +18,7 @@ export const commentsService = {
 
     },
     async getComment(id:string, userId:string): Promise<CommentViewModel | undefined> {
+        console.log(userId)
         return await commentsRepository.getCommentById(id, userId)
     },
     async updateComment(id:string,content:string): Promise<boolean> {
