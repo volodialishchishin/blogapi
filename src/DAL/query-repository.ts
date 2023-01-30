@@ -1,4 +1,4 @@
-import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "../DB/db";
+import {blogsCollection, commentsCollection, likesCollection, postsCollection, usersCollection} from "../DB/db";
 import {BlogViewModelWithQuery} from "../models/Blog/BlogViewModel";
 import {Helpers} from "../helpers/helpers";
 import {PostViewModelWithQuery} from "../models/Post/PostViewModel";
@@ -62,17 +62,34 @@ export const queryRepository = {
         pageNumber: number,
         sortBy: string,
         pageSize: number,
-        sortDirection: 'asc' | 'desc'
+        sortDirection: 'asc' | 'desc',
+        userId:string
     ): Promise<CommentViewModelWithQuery> {
-        let result = await commentsCollection.find({postId: postId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
+        let matchedComments = await commentsCollection.find({postId: postId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allComments = await commentsCollection.find({postId: postId}).toArray()
         const pagesCount = Math.ceil(allComments.length / pageSize)
+
+        const matchedCommentsWithLikes = await Promise.all(matchedComments.map(async comment=>{
+            const mappedComment = await Helpers.commentsMapperToView(comment)
+            if (userId){
+                return mappedComment
+            }
+            let myLikeForComment = await likesCollection.findOne({
+                userId,
+                commentId:comment.id
+            })
+            if (myLikeForComment){
+                mappedComment.likesInfo.myStatus = myLikeForComment.status
+            }
+            return mappedComment
+        }))
+
         return {
             pagesCount: Number(pagesCount),
             page: Number(pageNumber),
             pageSize: Number(pageSize),
             totalCount: allComments.length,
-            items: result.map(Helpers.commentsMapperToView)
+            items: matchedCommentsWithLikes
         }
     },
     async getBlogs(

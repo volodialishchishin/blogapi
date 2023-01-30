@@ -1,9 +1,12 @@
 import {PostViewModel} from "../models/Post/PostViewModel";
 import {BlogViewModel} from "../models/Blog/BlogViewModel";
 import {UserViewModel} from "../models/User/UserViewModel";
-import {CommentViewModel} from "../models/Comment/CommentViewModel";
 import {UserModel} from "../models/User/User";
 import {TokenModel} from "../models/Token/TokenModel";
+import {CommentModel} from "../models/Comment/CommentModel";
+import {likesCollection} from "../DB/db";
+import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
+import {CommentViewModel} from "../models/Comment/CommentViewModel";
 
 export const Helpers = {
     postsMapperToView(post:PostViewModel): PostViewModel{
@@ -33,13 +36,20 @@ export const Helpers = {
             login:user.accountData.login
         }
     },
-    commentsMapperToView(comment:CommentViewModel): CommentViewModel{
+    async commentsMapperToView(comment:CommentModel): Promise<CommentViewModel>{
+        let likesCount = await likesCollection.find({id:comment.id, status: LikeInfoViewModelValues.like}).toArray()
+        let disLikesCount = await likesCollection.find({id:comment.id,status: LikeInfoViewModelValues.dislike }).toArray()
         return {
             content: comment.content,
             userId: comment.userId,
             userLogin: comment.userLogin,
             id: comment.id,
             createdAt: comment.createdAt,
+            likesInfo:{
+                likesCount: likesCount.length,
+                dislikesCount: disLikesCount.length,
+                myStatus:LikeInfoViewModelValues.none
+            }
         }
     },
     deviceMapperToView (token:TokenModel) {

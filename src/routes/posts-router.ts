@@ -21,6 +21,8 @@ import {commentsService} from "../services/comments-service";
 import {authMiddlewareJwt} from "../middlwares/auth-middleware-jwt";
 import {CommentViewModel, CommentViewModelWithQuery} from "../models/Comment/CommentViewModel";
 import {postsRepository} from "../DAL/posts.repository";
+import {commentsRepository} from "../DAL/comments-repository";
+import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
 
 
 export const postsRouter = Router()
@@ -121,7 +123,13 @@ postsRouter.post('/:id/comments',
         }
         else{
             let result = await commentsService.createComment(req.params.id, content, user!.id, user!.accountData.login)
-            res.status(201).json(result)
+            let comment = await  commentsRepository.getCommentById(result, req.context.user.id);
+            comment!.likesInfo ={
+                myStatus: LikeInfoViewModelValues.none,
+                dislikesCount:0,
+                likesCount:0
+            }
+            res.status(201).json(comment)
         }
     }
 )
@@ -136,7 +144,7 @@ postsRouter.get('/:id/comments',
         const sortBy = req.query.sortBy || 'createdAt'
         const pageSize = req.query.pageSize || 10
         const sortDirection = req.query.sortDirection || 'desc'
-        let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection)
+        let result = await queryRepository.getComments(req.params.id,pageNumber, sortBy, pageSize, sortDirection,req.context.user.id)
         result.items.length ? res.status(200).json(result):res.sendStatus(404)
     })
 

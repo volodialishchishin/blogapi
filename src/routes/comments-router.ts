@@ -15,12 +15,14 @@ import {commentsService} from "../services/comments-service";
 import {CommentInputModel} from "../models/Comment/CommentInputModel";
 import {authMiddlewareJwt} from "../middlwares/auth-middleware-jwt";
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
+import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
+import {commentsRepository} from "../DAL/comments-repository";
 
 export const commentsRouter = Router()
 
 commentsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    let result = await commentsService.getComment(req.params.id)
-    result?res.status(200).json(result):res.sendStatus(404)
+    let result = await commentsService.getComment(req.params.id, req.context.user.id)
+    result ? res.status(200).json(result) : res.sendStatus(404)
 })
 
 commentsRouter.put('/:commentId',
@@ -28,7 +30,7 @@ commentsRouter.put('/:commentId',
     body('content').isString().trim().isLength({min: 20, max: 300}),
     inputValidationMiddlware,
     async (req: RequestWithParamsAndBody<{ commentId: string }, CommentInputModel>, res: Response) => {
-        let comment = await commentsService.getComment(req.params.commentId)
+        let comment = await commentsService.getComment(req.params.commentId, req.context.user.id)
         if (!comment) {
             res.sendStatus(404)
             return
@@ -48,7 +50,7 @@ commentsRouter.delete('/:commentId',
     authMiddlewareJwt,
     inputValidationMiddlware,
     async (req: RequestWithParams<{ commentId: string }>, res: Response) => {
-        let comment = await commentsService.getComment(req.params.commentId)
+        let comment = await commentsService.getComment(req.params.commentId, req.context.user.id)
         if (!comment) {
             res.sendStatus(404)
             return
@@ -65,3 +67,12 @@ commentsRouter.delete('/:commentId',
         }
     })
 
+commentsRouter.put('/:commentId/like-status',
+    body('content').isString().isIn(['None', 'LikeInfo', 'Dislike']),
+    authMiddlewareJwt,
+    inputValidationMiddlware,
+    async (req: RequestWithParamsAndBody<{commentId:string},{ likeStatus: LikeInfoViewModelValues }>, res: Response) => {
+        const { likeStatus } = req.body
+
+        await commentsRepository.updateLikeStatus(likeStatus, req.context.user.id, req.params.commentId)
+    })
