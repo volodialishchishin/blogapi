@@ -43,6 +43,11 @@ postsRouter.get('/',
         const authToken = req.headers.authorization?.split(' ')[1] || ''
         const user = jwtService.getUserIdByToken(authToken)
         console.log('token',authToken)
+        console.log('token',authToken)
+        console.log('token',authToken)
+        console.log('token',authToken)
+        console.log('token',authToken)
+        console.log('token',authToken)
         res.status(200).json(await queryRepository.getPosts(pageNumber, sortBy, pageSize, sortDirection, user?.user))
     })
 
