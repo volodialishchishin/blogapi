@@ -50,8 +50,9 @@ export const postsRepository = {
             })
             if (likeStatus){
                 postToView.extendedLikesInfo.myStatus = likeStatus?.status || LikeInfoViewModelValues.none
-                postToView.extendedLikesInfo.newestLikes = mappedLastLikes
+
             }
+            postToView.extendedLikesInfo.newestLikes = mappedLastLikes
             return postToView
         }
         else{
