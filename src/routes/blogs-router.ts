@@ -17,6 +17,7 @@ import {postsService} from "../services/posts-service";
 import {PostViewModel, PostViewModelWithQuery} from "../models/Post/PostViewModel";
 import {queryRepository} from "../DAL/query-repository";
 import {PostCreatedModel} from "../models/Post/PostModel";
+import {jwtService} from "../Application/jwt-service";
 
 export const blogsRouter = Router()
 
@@ -45,7 +46,9 @@ blogsRouter.get('/:blogId/posts', query('searchNameTerm').isString(),
         const sortBy = req.query.sortBy || 'createdAt'
         const pageSize = req.query.pageSize || 10
         const sortDirection = req.query.sortDirection || 'desc'
-        let result = await queryRepository.getBlogsByBlogId(req.params.blogId, pageNumber, sortBy, pageSize, sortDirection)
+        const authToken = req.headers.authorization?.split(' ')[1] || ''
+        const user = jwtService.getUserIdByToken(authToken)
+        let result = await queryRepository.getBlogsByBlogId(req.params.blogId, pageNumber, sortBy, pageSize, sortDirection,user?.user)
         if (result){
             res.status(200).json(result)
         }
