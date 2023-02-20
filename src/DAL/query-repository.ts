@@ -152,11 +152,11 @@ export const queryRepository = {
                     login: e.userLogin
                 }
             })
+            mappedPost.extendedLikesInfo.newestLikes = mappedLastLikes
             if (myLikeForComment){
                 mappedPost.extendedLikesInfo.myStatus = myLikeForComment.status
                 return mappedPost
             }
-            mappedPost.extendedLikesInfo.newestLikes = mappedLastLikes
             return mappedPost
         }))
         return {

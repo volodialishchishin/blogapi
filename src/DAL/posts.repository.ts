@@ -39,7 +39,7 @@ export const postsRepository = {
             if (!userId){
                 return postToView
             }
-            let likeStatus = await likesCollection.findOne({userId,commentId:id})
+            let likeStatus = await likesCollection.findOne({userId,entetyId:id})
             let lastLikes = await likesCollection.find({entetyId:id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
             let mappedLastLikes = lastLikes.map(e=>{
                 return{
