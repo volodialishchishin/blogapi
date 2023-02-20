@@ -37,7 +37,8 @@ export const postsService = {
         return await postsRepository.deletePost(id)
 
     },
-    async getPost(id: string): Promise<PostViewModel | undefined> {
-        return await postsRepository.getPost(id)
+    async getPost(id: string, userId:string): Promise<PostViewModel | undefined> {
+
+        return await postsRepository.getPost(id, userId)
     }
 }

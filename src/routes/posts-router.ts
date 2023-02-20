@@ -107,7 +107,9 @@ postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParamsAndBody<
 )
 
 postsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response<PostViewModel>) => {
-        let result = await postsService.getPost(req.params.id)
+    const authToken = req.headers.authorization?.split(' ')[1] || ''
+    const user = jwtService.getUserIdByToken(authToken)
+    let result = await postsService.getPost(req.params.id, user.user)
         if (result) {
             res.status(200).json(result)
         } else {
@@ -122,7 +124,7 @@ postsRouter.post('/:id/comments',
     async (req: RequestWithParamsAndBody<{ id: string }, CommentInputModel>, res: Response<CommentViewModel>) => {
         const {content} = req.body
         const {context: {user} = {}} = req
-        let foundPost = await postsRepository.getPost(req.params.id)
+        let foundPost = await postsRepository.getPost(req.params.id, user!.id)
         if (!foundPost) {
           res.sendStatus(404)
         }
