@@ -13,21 +13,46 @@ export const queryRepository = {
         pageNumber: number,
         sortBy: string,
         pageSize: number,
-        sortDirection: 'asc' | 'desc'): Promise<PostViewModelWithQuery | null> {
+        sortDirection: 'asc' | 'desc',
+        userId:string): Promise<PostViewModelWithQuery | null> {
         let foundBlog = await blogsRepository.getBlog(blogId)
         if (!foundBlog) {
             return null
         }
-        let result = await postsCollection.find({blogId: blogId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
+        let matchedPosts = await postsCollection.find({blogId: blogId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allPosts = await postsCollection.find({blogId: blogId}).toArray()
         const pagesCount = Math.ceil(allPosts.length / pageSize)
-        let mappedResult = await Promise.all(result.map(Helpers.postsMapperToView))
+        const matchedCommentsWithLikes = await Promise.all(matchedPosts.map(async post=>{
+            const mappedPost = await Helpers.postsMapperToView(post)
+            let lastLikes = await likesCollection.find({entetyId:post.id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
+            mappedPost.extendedLikesInfo.newestLikes = lastLikes.map(e => {
+                return {
+                    addedAt: e.dateAdded,
+                    userId: e.userId,
+                    login: e.userLogin
+                }
+            })
+            if (!userId){
+                return mappedPost
+            }
+
+            let myLikeForComment = await likesCollection.findOne({
+                userId,
+                entetyId:post.id
+            })
+            if (myLikeForComment){
+                mappedPost.extendedLikesInfo.myStatus = myLikeForComment.status
+                return mappedPost
+            }
+            return mappedPost
+        }))
+
         return {
             pagesCount: Number(pagesCount),
             page: Number(pageNumber),
             pageSize: Number(pageSize),
             totalCount: allPosts.length,
-            items: mappedResult
+            items: matchedCommentsWithLikes
         }
     },
     async getUsers(
@@ -135,7 +160,14 @@ export const queryRepository = {
         const pagesCount = Math.ceil(allPosts.length / pageSize)
         const matchedCommentsWithLikes = await Promise.all(matchedPosts.map(async post=>{
             const mappedPost = await Helpers.postsMapperToView(post)
-
+            let lastLikes = await likesCollection.find({entetyId:post.id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
+            mappedPost.extendedLikesInfo.newestLikes = lastLikes.map(e => {
+                return {
+                    addedAt: e.dateAdded,
+                    userId: e.userId,
+                    login: e.userLogin
+                }
+            })
             if (!userId){
                 return mappedPost
             }
@@ -144,17 +176,8 @@ export const queryRepository = {
                 userId,
                 entetyId:post.id
             })
-            let lastLikes = await likesCollection.find({entetyId:post.id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
-            let mappedLastLikes = lastLikes.map(e=>{
-                return{
-                    addedAt: e.dateAdded,
-                    userId: e.userId,
-                    login: e.userLogin
-                }
-            })
             if (myLikeForComment){
                 mappedPost.extendedLikesInfo.myStatus = myLikeForComment.status
-                mappedPost.extendedLikesInfo.newestLikes = mappedLastLikes
                 return mappedPost
             }
             return mappedPost
