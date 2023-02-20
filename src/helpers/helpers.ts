@@ -7,9 +7,12 @@ import {CommentModel} from "../models/Comment/CommentModel";
 import {likesCollection} from "../DB/db";
 import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
 import {CommentViewModel} from "../models/Comment/CommentViewModel";
+import {PostCreatedModel, PostModel} from "../models/Post/PostModel";
 
 export const Helpers = {
-    postsMapperToView(post:PostViewModel): PostViewModel{
+    async postsMapperToView(post:PostModel): Promise<PostViewModel>{
+        let likesCount = await likesCollection.find({entetyId:post.id, status: LikeInfoViewModelValues.like}).toArray()
+        let disLikesCount = await likesCollection.find({entetyId:post.id,status: LikeInfoViewModelValues.dislike }).toArray()
         return {
             id: post.id,
             title: post.title,
@@ -18,6 +21,12 @@ export const Helpers = {
             blogId: post.blogId,
             blogName: post.blogName,
             createdAt: post.createdAt,
+            extendedLikesInfo:{
+                likesCount: likesCount.length,
+                dislikesCount: disLikesCount.length,
+                myStatus:LikeInfoViewModelValues.none,
+                newestLikes:[]
+            }
         }
     },
     blogsMapperToView(blog:BlogViewModel): BlogViewModel{

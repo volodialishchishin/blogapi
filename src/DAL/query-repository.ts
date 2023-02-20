@@ -5,6 +5,7 @@ import {PostViewModelWithQuery} from "../models/Post/PostViewModel";
 import {blogsRepository} from "./blogs-repository";
 import {userViewModelWithQuery} from "../models/User/UserViewModel";
 import {CommentViewModelWithQuery} from "../models/Comment/CommentViewModel";
+import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
 
 export const queryRepository = {
     async getBlogsByBlogId(
@@ -20,12 +21,13 @@ export const queryRepository = {
         let result = await postsCollection.find({blogId: blogId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allPosts = await postsCollection.find({blogId: blogId}).toArray()
         const pagesCount = Math.ceil(allPosts.length / pageSize)
+        let mappedResult = await Promise.all(result.map(Helpers.postsMapperToView))
         return {
             pagesCount: Number(pagesCount),
             page: Number(pageNumber),
             pageSize: Number(pageSize),
             totalCount: allPosts.length,
-            items: result.map(Helpers.postsMapperToView)
+            items: mappedResult
         }
     },
     async getUsers(
@@ -57,44 +59,7 @@ export const queryRepository = {
             items: result.map(Helpers.userMapperToView)
         }
     },
-    async getComments(
-        postId: string,
-        pageNumber: number,
-        sortBy: string,
-        pageSize: number,
-        sortDirection: 'asc' | 'desc',
-        userId:string
-    ): Promise<CommentViewModelWithQuery> {
-        let matchedComments = await commentsCollection.find({postId: postId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
-        const allComments = await commentsCollection.find({postId: postId}).toArray()
-        const pagesCount = Math.ceil(allComments.length / pageSize)
-        const matchedCommentsWithLikes = await Promise.all(matchedComments.map(async comment=>{
-            const mappedComment = await Helpers.commentsMapperToView(comment)
-            console.log(userId,comment.id)
-            if (!userId){
-                return mappedComment
-            }
 
-            let myLikeForComment = await likesCollection.findOne({
-                userId,
-                commentId:comment.id
-            })
-
-            if (myLikeForComment){
-                mappedComment.likesInfo.myStatus = myLikeForComment.status
-                return mappedComment
-            }
-            return mappedComment
-        }))
-
-        return {
-            pagesCount: Number(pagesCount),
-            page: Number(pageNumber),
-            pageSize: Number(pageSize),
-            totalCount: allComments.length,
-            items: matchedCommentsWithLikes
-        }
-    },
     async getBlogs(
         searchNameTerm: string | null,
         pageNumber: number,
@@ -120,21 +85,86 @@ export const queryRepository = {
             items: result.map(Helpers.blogsMapperToView)
         }
     },
+
+    async getComments(
+        postId: string,
+        pageNumber: number,
+        sortBy: string,
+        pageSize: number,
+        sortDirection: 'asc' | 'desc',
+        userId:string
+    ): Promise<CommentViewModelWithQuery> {
+        let matchedComments = await commentsCollection.find({postId: postId}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
+        const allComments = await commentsCollection.find({postId: postId}).toArray()
+        const pagesCount = Math.ceil(allComments.length / pageSize)
+        const matchedCommentsWithLikes = await Promise.all(matchedComments.map(async comment=>{
+            const mappedComment = await Helpers.commentsMapperToView(comment)
+            if (!userId){
+                return mappedComment
+            }
+
+            let myLikeForComment = await likesCollection.findOne({
+                userId,
+                commentId:comment.id
+            })
+
+            if (myLikeForComment){
+                mappedComment.likesInfo.myStatus = myLikeForComment.status
+                return mappedComment
+            }
+            return mappedComment
+        }))
+
+        return {
+            pagesCount: Number(pagesCount),
+            page: Number(pageNumber),
+            pageSize: Number(pageSize),
+            totalCount: allComments.length,
+            items: matchedCommentsWithLikes
+        }
+    },
     async getPosts(
         pageNumber: number,
         sortBy: string,
         pageSize: number,
-        sortDirection: 'asc' | 'desc'
+        sortDirection: 'asc' | 'desc',
+        userId:string
     ): Promise<PostViewModelWithQuery> {
-        let result = await postsCollection.find({}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
+        let matchedPosts = await postsCollection.find({}).skip((pageNumber - 1) * pageSize).limit(Number(pageSize)).sort(sortBy, sortDirection).toArray()
         const allPosts = await postsCollection.find({}).toArray()
         const pagesCount = Math.ceil(allPosts.length / pageSize)
+        const matchedCommentsWithLikes = await Promise.all(matchedPosts.map(async post=>{
+            const mappedPost = await Helpers.postsMapperToView(post)
+
+            if (!userId){
+                return mappedPost
+            }
+
+            let myLikeForComment = await likesCollection.findOne({
+                userId,
+                entetyId:post.id
+            })
+            let lastLikes = await likesCollection.find({entetyId:post.id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
+            let mappedLastLikes = lastLikes.map(e=>{
+                return{
+                    addedAt: e.dateAdded,
+                    userId: e.userId,
+                    login: e.userLogin
+                }
+            })
+            if (myLikeForComment){
+                mappedPost.extendedLikesInfo.myStatus = myLikeForComment.status
+                mappedPost.extendedLikesInfo.newestLikes = mappedLastLikes
+                return mappedPost
+            }
+            return mappedPost
+        }))
         return {
             pagesCount: Number(pagesCount),
             page: Number(pageNumber),
             pageSize: Number(pageSize),
             totalCount: allPosts.length,
-            items: result.map(Helpers.postsMapperToView)
+            items: matchedCommentsWithLikes
         }
     },
 }

@@ -16,6 +16,7 @@ import {BlogPostInputModel} from "../models/Blog/BlogPostInputModel";
 import {postsService} from "../services/posts-service";
 import {PostViewModel, PostViewModelWithQuery} from "../models/Post/PostViewModel";
 import {queryRepository} from "../DAL/query-repository";
+import {PostCreatedModel} from "../models/Post/PostModel";
 
 export const blogsRouter = Router()
 
@@ -113,7 +114,7 @@ blogsRouter.post('/:blogId/posts',
     body('shortDescription').isString().trim().isLength({min: 1, max: 100}),
     body('content').isString().trim().isLength({min: 1, max: 1000}),
     inputValidationMiddlware,
-    async (req: RequestWithParamsAndBody<{ blogId: string }, BlogPostInputModel>, res: Response<PostViewModel>) => {
+    async (req: RequestWithParamsAndBody<{ blogId: string }, BlogPostInputModel>, res: Response<PostCreatedModel>) => {
         const {content, shortDescription, title} = req.body
         let result = await postsService.createPost(req.params.blogId, title, content, shortDescription)
         if (result){

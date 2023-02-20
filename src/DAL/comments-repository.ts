@@ -46,7 +46,7 @@ export const commentsRepository = {
         );
         return result.deletedCount === 1
     },
-    async updateLikeStatus(likeStatus: LikeInfoViewModelValues, userId: string, commentId: string) {
+    async updateLikeStatus(likeStatus: LikeInfoViewModelValues, userId: string, commentId: string, login:string) {
         let comment = await commentsCollection.findOne({id:commentId})
         if (!comment){
             return false
@@ -55,16 +55,17 @@ export const commentsRepository = {
         if (!like){
             const status:LikeInfoModel = {
                 id:v4(),
-                commentId,
+                entetyId:commentId,
                 userId,
                 status: likeStatus,
-                dateAdded: new Date()
+                dateAdded: new Date(),
+                userLogin:login
             }
             await likesCollection.insertOne(status)
         }
         else{
             if (likeStatus === LikeInfoViewModelValues.none){
-                await likesCollection.deleteOne({userId:like.userId,commentId:like.commentId})
+                await likesCollection.deleteOne({userId:like.userId,commentId:like.entetyId})
             }else{
                 await likesCollection.updateOne({commentId,userId},{$set:{status:likeStatus}})
             }

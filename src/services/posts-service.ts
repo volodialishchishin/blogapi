@@ -2,15 +2,17 @@ import {PostViewModel} from "../models/Post/PostViewModel";
 import {blogsRepository} from "../DAL/blogs-repository";
 import {Helpers} from "../helpers/helpers";
 import {postsRepository} from "../DAL/posts.repository";
+import {PostInputModel} from "../models/Post/PostInputModel";
+import {PostCreatedModel, PostModel} from "../models/Post/PostModel";
 
 export const postsService = {
     async getPosts(): Promise<PostViewModel[]> {
         return postsRepository.getPosts()
     },
 
-    createPost: async function (blogId: string, title: string, content: string, shortDescription: string): Promise<PostViewModel|null> {
+    createPost: async function (blogId: string, title: string, content: string, shortDescription: string): Promise<PostCreatedModel|null> {
         let blogger = await blogsRepository.getBlog(blogId)
-        let newPost:PostViewModel
+        let newPost:PostModel
         if (blogger){
              newPost = {
                 blogName: blogger.name,

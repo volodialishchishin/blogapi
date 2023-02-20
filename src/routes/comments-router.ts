@@ -79,7 +79,7 @@ commentsRouter.put('/:commentId/like-status',
     async (req: RequestWithParamsAndBody<{commentId:string},{ likeStatus: LikeInfoViewModelValues }>, res: Response) => {
         const { likeStatus } = req.body
 
-        let result = await commentsRepository.updateLikeStatus(likeStatus, req?.context?.user?.id, req.params.commentId)
+        let result = await commentsRepository.updateLikeStatus(likeStatus, req?.context?.user?.id, req.params.commentId, req.context.user.accountData.login)
         if (result){
             res.sendStatus(204)
         }else{

@@ -24,6 +24,8 @@ import {postsRepository} from "../DAL/posts.repository";
 import {commentsRepository} from "../DAL/comments-repository";
 import {LikeInfoViewModelValues} from "../models/LikeInfo/LikeInfoViewModel";
 import {jwtService} from "../Application/jwt-service";
+import {commentsRouter} from "./comments-router";
+import {PostCreatedModel} from "../models/Post/PostModel";
 
 
 export const postsRouter = Router()
@@ -38,7 +40,9 @@ postsRouter.get('/',
         const sortBy = req.query.sortBy || 'createdAt'
         const pageSize = req.query.pageSize || 10
         const sortDirection = req.query.sortDirection || 'desc'
-        res.status(200).json(await queryRepository.getPosts(pageNumber, sortBy, pageSize, sortDirection))
+        const authToken = req.headers.authorization?.split(' ')[1] || ''
+        const user = jwtService.getUserIdByToken(authToken)
+        res.status(200).json(await queryRepository.getPosts(pageNumber, sortBy, pageSize, sortDirection, user?.user))
     })
 
 postsRouter.post('/',
@@ -55,7 +59,7 @@ postsRouter.post('/',
     body('content').isString().trim().isLength({min: 1, max: 1000}),
     body('title').isString().trim().isLength({min: 1, max: 30}),
     inputValidationMiddlware,
-    async (req: RequestWithBody<PostInputModel>, res: Response<PostViewModel>) => {
+    async (req: RequestWithBody<PostInputModel>, res: Response<PostCreatedModel>) => {
         const {blogId, title, content, shortDescription} = req.body
         let result = await postsService.createPost(blogId, title, content, shortDescription)
         if (result) {
@@ -158,7 +162,21 @@ postsRouter.get('/:id/comments',
         }catch (e) {
             console.log(e)
         }
-
     }
     )
+    postsRouter.put('/:postId/like-status',
+    body('likeStatus').isString().isIn(['Like','None','Dislike']),
+    authMiddlewareJwt,
+    inputValidationMiddlware,
+    async (req: RequestWithParamsAndBody<{postId:string},{ likeStatus: LikeInfoViewModelValues }>, res: Response) => {
+        const { likeStatus } = req.body
+
+        let result = await postsRepository.updateLikeStatus(likeStatus, req?.context?.user?.id, req.params.postId, req.context.user.accountData.login)
+        if (result){
+            res.sendStatus(204)
+        }else{
+            res.sendStatus(404)
+        }
+
+    })
 

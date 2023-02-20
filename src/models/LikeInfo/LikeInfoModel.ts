@@ -2,9 +2,9 @@ import {LikeInfoViewModelValues} from "./LikeInfoViewModel";
 
 export type LikeInfoModel = {
     id:string
-    commentId:string,
+    entetyId:string,
     userId:string,
     status:LikeInfoViewModelValues
     dateAdded: Date
-
+    userLogin:string
 }
