@@ -136,10 +136,6 @@ export const queryRepository = {
         const matchedCommentsWithLikes = await Promise.all(matchedPosts.map(async post=>{
             const mappedPost = await Helpers.postsMapperToView(post)
 
-            if (!userId){
-                return mappedPost
-            }
-
             let myLikeForComment = await likesCollection.findOne({
                 userId,
                 entetyId:post.id
