@@ -65,7 +65,7 @@ export const postsRepository = {
         if (!post){
             return false
         }
-        const like = await likesCollection.findOne({postId,userId})
+        const like = await likesCollection.findOne({entetyId:postId,userId})
         if (!like){
             const status:LikeInfoModel = {
                 id:v4(),
@@ -81,7 +81,7 @@ export const postsRepository = {
             if (likeStatus === LikeInfoViewModelValues.none){
                 await likesCollection.deleteOne({userId:like.userId,entetyId:like.entetyId})
             }else{
-                await likesCollection.updateOne({postId,userId},{$set:{status:likeStatus}})
+                await likesCollection.updateOne({entetyId:postId,userId},{$set:{status:likeStatus}})
             }
         }
         return true
