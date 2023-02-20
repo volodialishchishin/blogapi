@@ -109,7 +109,7 @@ postsRouter.delete('/:id', authMiddleware, async (req: RequestWithParamsAndBody<
 postsRouter.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Response<PostViewModel>) => {
     const authToken = req.headers.authorization?.split(' ')[1] || ''
     const user = jwtService.getUserIdByToken(authToken)
-    let result = await postsService.getPost(req.params.id, user.user)
+    let result = await postsService.getPost(req.params.id, user?.user)
         if (result) {
             res.status(200).json(result)
         } else {
