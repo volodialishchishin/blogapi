@@ -105,7 +105,7 @@ export const queryRepository = {
 
             let myLikeForComment = await likesCollection.findOne({
                 userId,
-                commentId:comment.id
+                entetyId:comment.id
             })
 
             if (myLikeForComment){
@@ -145,14 +145,13 @@ export const queryRepository = {
                 entetyId:post.id
             })
             let lastLikes = await likesCollection.find({entetyId:post.id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
-            let mappedLastLikes = lastLikes.map(e=>{
-                return{
+            mappedPost.extendedLikesInfo.newestLikes = lastLikes.map(e => {
+                return {
                     addedAt: e.dateAdded,
                     userId: e.userId,
                     login: e.userLogin
                 }
             })
-            mappedPost.extendedLikesInfo.newestLikes = mappedLastLikes
             if (myLikeForComment){
                 mappedPost.extendedLikesInfo.myStatus = myLikeForComment.status
                 return mappedPost

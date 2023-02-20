@@ -29,7 +29,7 @@ export const commentsRepository = {
                 if (!userId){
                     return commentToView
                 }
-                let likeStatus = await likesCollection.findOne({userId,commentId:id})
+                let likeStatus = await likesCollection.findOne({userId,entetyId:id})
                 console.log(userId,id)
                 if (likeStatus){
                     commentToView.likesInfo.myStatus = likeStatus?.status || LikeInfoViewModelValues.none
@@ -51,7 +51,7 @@ export const commentsRepository = {
         if (!comment){
             return false
         }
-        const like = await likesCollection.findOne({commentId,userId})
+        const like = await likesCollection.findOne({entetyId:commentId,userId})
         if (!like){
             const status:LikeInfoModel = {
                 id:v4(),
@@ -65,9 +65,9 @@ export const commentsRepository = {
         }
         else{
             if (likeStatus === LikeInfoViewModelValues.none){
-                await likesCollection.deleteOne({userId:like.userId,commentId:like.entetyId})
+                await likesCollection.deleteOne({userId:like.userId,entetyId:like.entetyId})
             }else{
-                await likesCollection.updateOne({commentId,userId},{$set:{status:likeStatus}})
+                await likesCollection.updateOne({entetyId:commentId,userId},{$set:{status:likeStatus}})
             }
         }
         return true
