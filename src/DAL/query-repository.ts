@@ -135,14 +135,7 @@ export const queryRepository = {
         const pagesCount = Math.ceil(allPosts.length / pageSize)
         const matchedCommentsWithLikes = await Promise.all(matchedPosts.map(async post=>{
             const mappedPost = await Helpers.postsMapperToView(post)
-            let lastLikes = await likesCollection.find({entetyId:post.id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
-            mappedPost.extendedLikesInfo.newestLikes = lastLikes.map(e => {
-                return {
-                    addedAt: e.dateAdded,
-                    userId: e.userId,
-                    login: e.userLogin
-                }
-            })
+
             if (!userId){
                 return mappedPost
             }
@@ -151,8 +144,17 @@ export const queryRepository = {
                 userId,
                 entetyId:post.id
             })
+            let lastLikes = await likesCollection.find({entetyId:post.id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
+            let mappedLastLikes = lastLikes.map(e=>{
+                return{
+                    addedAt: e.dateAdded,
+                    userId: e.userId,
+                    login: e.userLogin
+                }
+            })
             if (myLikeForComment){
                 mappedPost.extendedLikesInfo.myStatus = myLikeForComment.status
+                mappedPost.extendedLikesInfo.newestLikes = mappedLastLikes
                 return mappedPost
             }
             return mappedPost
