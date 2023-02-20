@@ -31,10 +31,31 @@ export const postsRepository = {
         return result.deletedCount === 1
 
     },
-    async getPost(id:string): Promise<PostViewModel | undefined> {
-        let result =  await postsCollection.find({id:id}).toArray()
-        if (result.length){
-            return Helpers.postsMapperToView(result[0])
+    async getPost(id:string ,userId:string): Promise<PostViewModel | undefined> {
+        const result = await postsCollection.findOne({id})
+        if (result){
+            let postToView  = await Helpers.postsMapperToView(result);
+
+            if (!userId){
+                return postToView
+            }
+            let likeStatus = await likesCollection.findOne({userId,commentId:id})
+            let lastLikes = await likesCollection.find({entetyId:id, status: LikeInfoViewModelValues.like}).sort({dateAdded:-1}).limit(3).toArray()
+            let mappedLastLikes = lastLikes.map(e=>{
+                return{
+                    addedAt: e.dateAdded,
+                    userId: e.userId,
+                    login: e.userLogin
+                }
+            })
+            if (likeStatus){
+                postToView.extendedLikesInfo.myStatus = likeStatus?.status || LikeInfoViewModelValues.none
+                postToView.extendedLikesInfo.newestLikes = mappedLastLikes
+            }
+            return postToView
+        }
+        else{
+            return undefined
         }
 
     },
